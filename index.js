@@ -56,7 +56,9 @@ $('#Login').click(function(){
             $('#marketValue').text("Market Value: " + marketValue)
             totalProfitLoss = parseFloat((totalProfitLoss + stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2))
             $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
-            $('<li>').text("Stock: " + ticker + "    YourAvgPrice: " + avgPrice[ticker] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2)).appendTo(stockList)
+            $('<li>', {text: "Stock: " + ticker + "    YourAvgPrice: " + avgPrice[ticker] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2),
+              id: ticker
+            }).appendTo(stockList)
         }
       })
     }
@@ -86,7 +88,7 @@ $('#Login').click(function(){
           appendTo: $('#searchStock')
         })
 
-        //display result
+        //display stock info
         $('<div>', {id: 'stockInfo'}).appendTo('body')
         $('<h1>', {id: 'stockTicker', text: ''}).appendTo('#stockInfo')
         $('<h2>', {id: 'stockCompany', text: ''}).appendTo('#stockInfo')
@@ -96,17 +98,54 @@ $('#Login').click(function(){
         $('<button>', {id: '1day', text: '1 Day History'}).appendTo('#stockHistory')
         $('<button>', {id: '1month', text: '1 Month History'}).appendTo('#stockHistory')
         $('<button>', {id: '6month', text: '6 Month History'}).appendTo('#stockHistory')
+        //buystock button
+        $('<div>', {id: 'buyStock'}).appendTo('#stockHistory')
+        $('<br>').appendTo('#buyStock')
+        $('<label>', {text: 'Buy Stock '}).appendTo('#buyStock')
+        $('<input>', {id: 'quantity', type: 'integer', placeholder: 'Enter how many you want'}).appendTo('#buyStock')
+        $('<button>', {text: 'Buy',id: 'buyButton'}).appendTo('#buyStock')
         $('#stockHistory').hide()
+        //get text in search bar
         $('#searchButton').click(function(){
           var searchSymbol = document.getElementById('searchSymbol').value
+          if (!symbols.includes(searchSymbol)){
+            window.alert("The symbol doesn't exist")
+          }
           $.ajax({
             type:'GET',
             url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
             success:function(data){
+              var price = data.delayedPrice
               $('#stockTicker').text(searchSymbol)
               $('#stockCompany').text(symbolCompany[searchSymbol])
               $('#stockPrice').text('Price: ' + data.delayedPrice)
               $('#stockHistory').show()
+
+              //buyStock
+              $('#buyButton').click(function(){
+                confirm("Confirm buy these stocks?")
+                //record quantity
+                var quantity = document.getElementById('quantity').value
+                if (!isInt(quantity)){
+                  window.alert("Quantity is not an integer.")
+                } else {
+                  if ((quantity * price) > cash){
+                    window.alert("You don't have enough cash to by this many.")
+                  } else{
+                    if (Object.keys(avgPrice).includes(searchSymbol)){
+                      var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
+                      var totalValueAfter = totalValueBefore + price*quantity
+                      //update avg price
+                      stocks[searchSymbol] = parseInt(stocks[searchSymbol]) + parseInt(quantity)
+                      avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
+                      //update html
+                      $('#' + searchSymbol).text("Stock: " + searchSymbol + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
+                    } else{
+
+                    }
+                  }
+                }
+              })
             }
           })
         })
@@ -116,3 +155,9 @@ $('#Login').click(function(){
 
   }//end of else
 })
+
+function isInt(value) {
+  return !isNaN(value) &&
+         parseInt(Number(value)) == value &&
+         !isNaN(parseInt(value, 10));
+}
