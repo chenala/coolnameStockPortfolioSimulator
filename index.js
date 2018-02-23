@@ -65,27 +65,54 @@ $('#Login').click(function(){
     $('<br>').appendTo('body')
     $('<div>', {id: 'searchStock'}).appendTo('body')
     $('<label>', {text: 'Search Stock '}).appendTo('#searchStock')
-    $('<input>', {id: 'symbol',type: 'text',placeholder: 'Enter Stock Symbol'}).appendTo('#searchStock')
+    $('<input>', {id: 'searchSymbol', type: 'text', placeholder: 'Enter Stock Symbol'}).appendTo('#searchStock')
     $('<button>', {text: 'Search',id: 'searchButton'}).appendTo('#searchStock')
 
     var symbols = []
+    var symbolCompany = {}
     $.ajax({
       type:'GET',
       url: api.concat('/ref-data/symbols'),
       success:function(data){
+        //store all tickers in array symbol
         data.forEach(function(item){
           symbols.push(item.symbol)
+          symbolCompany[item.symbol] = item.name
         })
-        $('#searchStock').show()
-        $('#symbol').autocomplete({
+        //autocomplete dropdown
+        $('#searchSymbol').autocomplete({
           source: symbols,
           minLength: 2,
-          appendTo: $('#searchStock'),
+          appendTo: $('#searchStock')
+        })
+
+        //display result
+        $('<div>', {id: 'stockInfo'}).appendTo('body')
+        $('<h1>', {id: 'stockTicker', text: ''}).appendTo('#stockInfo')
+        $('<h2>', {id: 'stockCompany', text: ''}).appendTo('#stockInfo')
+        $('<p>', {id: 'stockPrice', text: ''}).appendTo('#stockInfo')
+        $('<div>', {id: 'stockHistory'}).appendTo('#stockInfo')
+        $('<ul>', {id: 'histories'}).appendTo('#stockHistory')
+        $('<button>', {id: '1day', text: '1 Day History'}).appendTo('#stockHistory')
+        $('<button>', {id: '1month', text: '1 Month History'}).appendTo('#stockHistory')
+        $('<button>', {id: '6month', text: '6 Month History'}).appendTo('#stockHistory')
+        $('#stockHistory').hide()
+        $('#searchButton').click(function(){
+          var searchSymbol = document.getElementById('searchSymbol').value
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
+            success:function(data){
+              $('#stockTicker').text(searchSymbol)
+              $('#stockCompany').text(symbolCompany[searchSymbol])
+              $('#stockPrice').text('Price: ' + data.delayedPrice)
+              $('#stockHistory').show()
+            }
+          })
         })
 
       }
     })
-
 
   }//end of else
 })
