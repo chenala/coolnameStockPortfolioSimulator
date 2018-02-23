@@ -4,15 +4,15 @@ $('#Login').click(function(){
   var username = document.getElementById('uname').value
   if (username === 'admin'){
     //if it is admin role
-    $('div').remove('.username')
-    $('div').remove('.password')
-    $('div').remove('.login')
+    $('.username').hide()
+    $('.password').hide()
+    $('.login').hide()
     $('<p>').appendTo('body').text("welcome " + username)
   } else{
     //if it is a user role
-    $('div').remove('.username')
-    $('div').remove('.password')
-    $('div').remove('.login')
+    $('.username').hide()
+    $('.password').hide()
+    $('.login').hide()
     $('<p>').appendTo('body').text("welcome " + username)
 
     var standing = $('<div>').appendTo('body')
@@ -27,6 +27,7 @@ $('#Login').click(function(){
     var marketValue = 0
     var totalProfitLoss = 0
 
+    //display cash, total, and profit/loss
     $('<p>').appendTo(standing).text("Cash: " + cash)
     $('<p>', {
       id: 'marketValue',
@@ -37,12 +38,13 @@ $('#Login').click(function(){
       text: 'Total Profit/Loss' + 0
     }).appendTo(standing)
 
+    //display list of stocks
     var stockList = $('<div>').appendTo('body')
     var list = $('<ul>', {
       id: 'stockList'
     }).appendTo(stockList)
 
-    //calculate total equity from stocks that user holds
+    //calculate total equity from stocks that user holds and user's profit/loss
     for (var key in stocks){
       var url = api.concat('/stock/' + key + '/delayed-quote')
       $.ajax({
@@ -58,6 +60,32 @@ $('#Login').click(function(){
         }
       })
     }
+
+    //search stocks
+    $('<br>').appendTo('body')
+    $('<div>', {id: 'searchStock'}).appendTo('body')
+    $('<label>', {text: 'Search Stock '}).appendTo('#searchStock')
+    $('<input>', {id: 'symbol',type: 'text',placeholder: 'Enter Stock Symbol'}).appendTo('#searchStock')
+    $('<button>', {text: 'Search',id: 'searchButton'}).appendTo('#searchStock')
+
+    var symbols = []
+    $.ajax({
+      type:'GET',
+      url: api.concat('/ref-data/symbols'),
+      success:function(data){
+        data.forEach(function(item){
+          symbols.push(item.symbol)
+        })
+        $('#searchStock').show()
+        $('#symbol').autocomplete({
+          source: symbols,
+          minLength: 2,
+          appendTo: $('#searchStock'),
+        })
+
+      }
+    })
+
 
   }//end of else
 })
