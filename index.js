@@ -20,15 +20,18 @@ $('#Login').click(function(){
 
     //assume user has these stocks and cash
     //stocks store how many stocks of each company the user holds
-    var stocks = {'AAPL': 1, 'FB': 10, 'MSFT': 20}
+    var stocks = {'AAPL': 1, 'FB': 1}
     //avg price holds the avg price of the stock the user bought
-    var avgPrice = {'AAPL': 100, 'FB': 100, 'MSFT': 100}
+    var avgPrice = {'AAPL': 100, 'FB': 100}
     var cash = 1000
     var marketValue = 0
     var totalProfitLoss = 0
 
     //display cash, total, and profit/loss
-    $('<p>').appendTo(standing).text("Cash: " + cash)
+    $('<p>', {
+      text: 'Cash: ' + cash,
+      id: 'cash'
+    }).appendTo(standing)
     $('<p>', {
       id: 'marketValue',
       text: 'marketValue' + 0
@@ -52,9 +55,9 @@ $('#Login').click(function(){
         url: url,
         success:function(data){
             var ticker = data.symbol
-            marketValue = parseFloat((marketValue + stocks[ticker] * data.delayedPrice).toFixed(2))
+            marketValue = parseFloat((parseFloat(marketValue) + parseFloat(parseFloat(stocks[ticker]) * parseFloat(data.delayedPrice))).toFixed(2))
             $('#marketValue').text("Market Value: " + marketValue)
-            totalProfitLoss = parseFloat((totalProfitLoss + stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2))
+            totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[ticker]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[ticker]))).toFixed(2))
             $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
             $('<li>', {text: "Stock: " + ticker + "    YourAvgPrice: " + avgPrice[ticker] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2),
               id: ticker
@@ -133,15 +136,43 @@ $('#Login').click(function(){
                     window.alert("You don't have enough cash to by this many.")
                   } else{
                     if (Object.keys(avgPrice).includes(searchSymbol)){
+                      //if the stock exists
                       var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
                       var totalValueAfter = totalValueBefore + price*quantity
+                      //update total profit and loss
+                      totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
                       //update avg price
                       stocks[searchSymbol] = parseInt(stocks[searchSymbol]) + parseInt(quantity)
                       avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
                       //update html
                       $('#' + searchSymbol).text("Stock: " + searchSymbol + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
-                    } else{
 
+                      //calculate market value and profit/loss
+                      marketValue = parseFloat((parseFloat(marketValue) + parseFloat(price*quantity)).toFixed(2))
+                      //update total profit and loss
+                      totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+                      $('#marketValue').text("Market Value: " + marketValue)
+                      $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
+                      cash = parseFloat((cash - parseFloat((price*quantity).toFixed(2))).toFixed(2))
+                      $('#cash').text('Cash: ' + cash)
+                    } else{
+                      //if the stock doesn't exist
+                      stocks[searchSymbol] = quantity
+                      avgPrice[searchSymbol] = price
+                      //update total profit and loss
+                      totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+                      $('<li>', {text: "Stock: " + searchSymbol + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2),
+                        id: searchSymbol
+                      }).appendTo(stockList)
+
+                      //calculate market value and profit/loss
+                      marketValue = parseFloat(marketValue) + parseFloat((price*quantity).toFixed(2))
+                      //update total profit and loss
+                      totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+                      $('#marketValue').text("Market Value: " + marketValue)
+                      $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
+                      cash = parseFloat((cash - parseFloat((price*quantity).toFixed(2))).toFixed(2))
+                      $('#cash').text('Cash: ' + cash)
                     }
                   }
                 }
