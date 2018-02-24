@@ -152,7 +152,7 @@ $('#Login').click(function(){
               if ((quantity * price) > cash){
                 window.alert("You don't have enough cash to by this many.")
               } else{
-                if (Object.keys(avgPrice).includes(searchSymbol)){
+                if (Object.keys(avgPrice).includes(searchSymbol) && stocks[searchSymbol] != 0){
                   //if the stock exists, calculate avg price you bought it
                   var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
                   var totalValueAfter = totalValueBefore + price*quantity
@@ -219,6 +219,10 @@ $('#Login').click(function(){
                 if (quantity > stocks[searchSymbol]){
                   window.alert("You can't sell more than you have")
                 } else{
+                  var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
+                  var totalValueAfter = totalValueBefore - price*quantity
+                  //update total profit and loss
+                  totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
                   stocks[searchSymbol] = parseInt(stocks[searchSymbol]) - parseInt(quantity)
                   if (stocks[searchSymbol] == 0){
                     document.getElementById(searchSymbol).remove();
@@ -230,10 +234,6 @@ $('#Login').click(function(){
                     cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
                     $('#cash').text('Cash: ' + cash)
                   } else{
-                    var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
-                    var totalValueAfter = totalValueBefore - price*quantity
-                    //update total profit and loss
-                    totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
                     //update avg price
                     avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
                     //update html
