@@ -59,21 +59,22 @@ $('#Login').click(function(){
             $('#marketValue').text("Market Value: " + marketValue)
             totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[ticker]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[ticker]))).toFixed(2))
             $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
-            $('<li>', {text: "Stock: " + ticker + "    Quantity: " + stocks[ticker] + "    YourAvgPrice: " + avgPrice[ticker] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2),
+            $('<li>', {text: "Stock: " + ticker + "    Quantity: " + stocks[ticker] + "    YourAvgPrice: " + avgPrice[ticker] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     ",
               id: ticker
             }).appendTo(stockList)
         }
       })
     }
 
-    //buystock button
+    //buystock button and sell
     $('<div>', {id: 'buyStock'}).appendTo('body')
     $('<br>').appendTo('#buyStock')
-    $('<label>', {text: 'Buy Stock '}).appendTo('#buyStock')
+    $('<label>', {text: 'Stock '}).appendTo('#buyStock')
     $('<input>', {id: 'buySymbol', type: 'text', placeholder: 'Enter symbol of the stock you want'}).appendTo('#buyStock')
     $('<label>', {text: 'Quantity '}).appendTo('#buyStock')
     $('<input>', {id: 'quantity', type: 'integer', placeholder: 'Enter how many you want'}).appendTo('#buyStock')
     $('<button>', {text: 'Buy',id: 'buyButton'}).appendTo('#buyStock')
+    $('<button>', {text: 'Sell',id: 'sellButton'}).appendTo('#buyStock')
 
     //search stocks
     $('<br>').appendTo('body')
@@ -152,7 +153,7 @@ $('#Login').click(function(){
                 window.alert("You don't have enough cash to by this many.")
               } else{
                 if (Object.keys(avgPrice).includes(searchSymbol)){
-                  //if the stock exists
+                  //if the stock exists, calculate avg price you bought it
                   var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
                   var totalValueAfter = totalValueBefore + price*quantity
                   //update total profit and loss
@@ -197,6 +198,62 @@ $('#Login').click(function(){
       }
     })
 
+    //sell stock
+    $('#sellButton').click(function(){
+      if (confirm("Sell these stocks?")){
+        var searchSymbol = document.getElementById('buySymbol').value
+        searchSymbol = searchSymbol.toUpperCase()
+        //record quantity
+        var quantity = document.getElementById('quantity').value
+        if (!isInt(quantity)){
+          window.alert("Quantity is not an integer.")
+        } else {
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
+            success:function(data){
+              var price = data.delayedPrice
+              if (!Object.keys(avgPrice).includes(searchSymbol)){
+                window.alert("You don't have this stock.")
+              } else{
+                if (quantity > stocks[searchSymbol]){
+                  window.alert("You can't sell more than you have")
+                } else{
+                  stocks[searchSymbol] = parseInt(stocks[searchSymbol]) - parseInt(quantity)
+                  if (stocks[searchSymbol] == 0){
+                    document.getElementById(searchSymbol).remove();
+                    avgPrice[searchSymbol] = 0
+                    //calculate market value and profit/loss
+                    marketValue = parseFloat((parseFloat(marketValue) - parseFloat(price*quantity)).toFixed(2))
+                    $('#marketValue').text("Market Value: " + marketValue)
+                    $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
+                    cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
+                    $('#cash').text('Cash: ' + cash)
+                  } else{
+                    var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
+                    var totalValueAfter = totalValueBefore - price*quantity
+                    //update total profit and loss
+                    totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+                    //update avg price
+                    avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
+                    //update html
+                    $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
+                    //calculate market value and profit/loss
+                    marketValue = parseFloat((parseFloat(marketValue) - parseFloat(price*quantity)).toFixed(2))
+                    //update total profit and loss
+                    totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+                    $('#marketValue').text("Market Value: " + marketValue)
+                    $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
+                    cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
+                    $('#cash').text('Cash: ' + cash)
+                  }
+                }
+              }
+            }
+          })
+        }
+      }
+    })
   }//end of else
 })
 
