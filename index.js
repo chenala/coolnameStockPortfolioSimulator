@@ -85,6 +85,7 @@ $('#Login').click(function(){
 
     var symbols = []
     var symbolCompany = {}
+    var prev = 0;
     $.ajax({
       type:'GET',
       url: api.concat('/ref-data/symbols'),
@@ -111,9 +112,15 @@ $('#Login').click(function(){
         $('<button>', {id: '1day', text: '1 Day History'}).appendTo('#stockHistory')
         $('<button>', {id: '1month', text: '1 Month History'}).appendTo('#stockHistory')
         $('<button>', {id: '6month', text: '6 Month History'}).appendTo('#stockHistory')
+
+
+        $('<div>', {id: 'stockHistoryDetails'}).appendTo('#stockHistory')
+        $('<table>', {id: 'stockHistoryTable'}).appendTo('#stockHistoryDetails')
+
         $('#stockHistory').hide()
         //get text in search bar
         $('#searchButton').click(function(){
+          $("#stockHistoryTable").empty()
           var searchSymbol = document.getElementById('searchSymbol').value
           searchSymbol = searchSymbol.toUpperCase()
           if (!symbols.includes(searchSymbol)){
@@ -128,6 +135,62 @@ $('#Login').click(function(){
               $('#stockCompany').text(symbolCompany[searchSymbol])
               $('#stockPrice').text('Price: ' + data.delayedPrice)
               $('#stockHistory').show()
+
+
+              $('#1day').click(function(){
+                $("#stockHistoryTable").empty()
+
+                var date = new Date()
+    //            console.log(date)
+                var month = date.getMonth() + 1
+                var monthString = month.toString()
+                var day = date.getDate()
+                var year = date.getFullYear()
+                var time = "09:30" //unused
+
+                var url_extend;
+                if (month < 10) url_extend = '/stock/'+ searchSymbol +'/chart/date/' + year.toString() + '0' + month.toString() + day.toString()
+                else url_extend = '/stock/'+ searchSymbol +'/chart/date/' + year.toString() + month.toString() + day.toString()
+
+//                console.log(url_extend)
+
+                $('<tr>', {id: 'stockHistoryTitles'}).appendTo('#stockHistoryTable')
+                $("#stockHistoryTitles").empty()
+                $('<th>', {id: 'tableTitleSymbol', text: 'Stock'}).appendTo('#stockHistoryTitles')
+                $('<th>', {id: 'tableTitleDate', text: 'Date'}).appendTo('#stockHistoryTitles')
+                $('<th>', {id: 'tableTitleMinute', text: 'Time'}).appendTo('#stockHistoryTitles')
+                $('<th>', {text: 'High'}).appendTo('#stockHistoryTitles')
+                $('<th>', {text: 'Low'}).appendTo('#stockHistoryTitles')
+                $('<th>', {text: 'Volume'}).appendTo('#stockHistoryTitles')
+                $('<th>', {text: 'Change Over Time'}).appendTo('#stockHistoryTitles')
+
+                $.ajax({
+                  type:'GET',
+//                  async: false,
+                  url: api.concat(url_extend),
+                  success:function(data){
+//                    console.log(data)
+
+                    for(var i = 1; i < data.length; i += 5) {
+                      $('#rowEntry' + i.toString() + searchSymbol).empty()
+                      $('<tr>', {id: 'rowEntry' + i.toString() + searchSymbol}).appendTo('#stockHistoryTable')
+                      $('<td>', {id: 'obj_symbol',text: searchSymbol}).appendTo('#rowEntry' + i.toString() + searchSymbol)
+                      var objDate = data[i].date
+                      // format date so it is easier to read for users
+                      $('<td>', {id: 'obj_date', text: objDate.slice(0,4) + '-' + objDate.slice(4,6) + "-" + objDate.slice(6,8)}).appendTo('#rowEntry' + i.toString() + searchSymbol)
+                      $('<td>', {id: 'obj_label',text: data[i].label}).appendTo('#rowEntry' + i.toString() + searchSymbol)
+                      $('<td>', {id: 'obj_high',text: data[i].high}).appendTo('#rowEntry' + i.toString() + searchSymbol)
+                      $('<td>', {id: 'obj_low',text: data[i].low}).appendTo('#rowEntry' + i.toString() + searchSymbol)
+                      $('<td>', {id: 'obj_volume',text: data[i].volume}).appendTo('#rowEntry' + i.toString() + searchSymbol)
+                      $('<td>', {id: 'obj_changeOverTime',text: data[i].changeOverTime}).appendTo('#rowEntry' + i.toString() + searchSymbol)
+
+                    }
+                  }
+                })
+
+              })
+
+
             }
           })
         })
@@ -261,4 +324,8 @@ function isInt(value) {
   return !isNaN(value) &&
          parseInt(Number(value)) == value &&
          !isNaN(parseInt(value, 10));
+}
+
+function resetRow(i, func) {
+
 }
