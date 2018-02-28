@@ -34,7 +34,7 @@ $('#Login').click(function(){
     //Display user data
     var adminPanel = $('<div>').appendTo('body')
     $('<p>').appendTo(adminPanel).text('User Data:')
-
+/*
     console.log(users.length)
     for (var i = 0; i < users.length; i++) {
       var portfolioWorth = 0
@@ -57,6 +57,107 @@ $('#Login').click(function(){
         //id: userData
       }).appendTo(adminPanel)
     }
+*/
+
+    // Admin operations
+    $('<div>', {id: 'admin_op_div'}).appendTo('body')
+    $('<button>', {id: 'newUser_button', text:'Add New User'}).appendTo('#admin_op_div')
+    $('<button>', {id: 'addCash_button', text:'Give Cash to Existing User'}).appendTo('#admin_op_div')
+
+    $('<div>', {id: 'newUser_div'}).appendTo('#admin_op_div')
+    $('<h3>', {text: 'Create User'}).appendTo('#newUser_div')
+    $('<input>', {id: 'newUsername_input', type: 'text', placeholder: 'Enter new Username'}).appendTo('#newUser_div')
+    $('<input>', {id: 'newPassword_input1', type: 'password', placeholder: 'Enter password'}).appendTo('#newUser_div')
+    $('<input>', {id: 'newPassword_input2', type: 'password', placeholder: 'Re-enter password'}).appendTo('#newUser_div')
+    $('<input>', {id: 'newCash_input', type: 'text', placeholder: 'Enter cash amount'}).appendTo('#newUser_div')
+    $('<button>', {id: 'newUser_submit', text: 'Create User'}).appendTo('#newUser_div')
+    $('<button>', {id: 'newUser_cancel', text: 'Cancel'}).appendTo('#newUser_div')
+
+    $('<div>', {id: 'addCash_div'}).appendTo('#admin_op_div')
+    $('<h3>', {text: 'Give Cash to User'}).appendTo('#addCash_div')
+    $('<input>', {id: 'addCashUser_input', type: 'text', placeholder: 'Enter username of recipient'}).appendTo('#addCash_div')
+    $('<input>', {id: 'addCashValue_input', type: 'text', placeholder: 'Enter cash amount'}).appendTo('#addCash_div')
+    $('<button>', {id: 'addCash_submit', text: 'Give Cash'}).appendTo('#addCash_div')
+    $('<button>', {id: 'addCash_cancel', text: 'Cancel'}).appendTo('#addCash_div')
+
+    $('#addCash_div').hide()
+    $('#newUser_div').hide()
+
+    var newUserWindow_isOpen = false;
+    var addCashWindow_isOpen = false;
+    // add new user operation
+    $('#newUser_button').click(function(){
+      if(addCashWindow_isOpen) {
+        window.alert('Please finish or cancel your current request first.')
+      }
+      else if(!newUserWindow_isOpen) {
+        resetNewUserFields()
+        newUserWindow_isOpen = true;
+        $('#newUser_div').show()
+
+        $('#newUser_submit').click(function() {
+          var new_username = document.getElementById('newUsername_input').value
+          var new_cash = document.getElementById('newCash_input').value
+          var new_password1 = document.getElementById('newPassword_input1').value
+          var new_password2 = document.getElementById('newPassword_input2').value
+
+          if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
+            if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
+            else if(verifyUsername(new_username) && verifyCash(new_cash)) {
+              // TODO: create the user (requires backend)
+              window.alert('Success! User has been created. The username is: ' + new_username)
+              newUserWindow_isOpen = false
+              $('#newUser_div').hide()
+            }
+          }
+        })
+        $('#newUser_cancel').click(function() {
+          // close newUser form and reset all fields
+          newUserWindow_isOpen = false
+          $('#newUser_div').hide()
+          resetNewUserFields()
+        })
+      }
+    })
+
+    // add cash to existing user
+    $('#addCash_button').click(function(){
+      if(newUserWindow_isOpen) {
+        window.alert('Please finish or cancel your current request first.')
+      }
+      else if(!addCashWindow_isOpen) {
+        addCashWindow_isOpen = true;
+        $('#addCash_div').show()
+        resetAddCashFields()
+
+        $('#addCash_submit').click(function(){
+          var recipient = document.getElementById('addCashUser_input').value
+          var amount = document.getElementById('addCashValue_input').value
+
+          if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername(recipient) && verifyCash(amount)) {
+            // add amount to the recipient
+            window.alert('Succcess! Amount has been added to the recipient.')
+            addCashWindow_isOpen = false
+            $('#addCash_div').hide()
+          }
+        })
+
+        $('#addCash_cancel').click(function() {
+          // close newUser form and reset all fields
+          addCashWindow_isOpen = false
+          $('#addCash_div').hide()
+          resetAddCashFields()
+        })
+
+      }
+    })
+
+
+
+
+
+
+
 
   } else{
     //if it is a user role
@@ -163,55 +264,15 @@ $('#Login').click(function(){
         $('<button>', {id: 'six_months', text: '6-Month History'}).appendTo('#stockHistory')
         $('<button>', {id: 'one_year', text: '1-Year History'}).appendTo('#stockHistory')
 
-        var time_break = ['1w', '6m', '1y']
-
         $('<div>', {id: 'stockHistoryDetails'}).appendTo('#stockHistory')
         $('<div>', {id: 'stockHistoryDiv1w'}).appendTo('#stockHistoryDetails')
         $('<div>', {id: 'stockHistoryDiv6m'}).appendTo('#stockHistoryDetails')
         $('<div>', {id: 'stockHistoryDiv1y'}).appendTo('#stockHistoryDetails')
 
-        for(var i = 0 ; i < 3 ; i++) {
-          $('<table>', {id: 'table_' + time_break[i]}).appendTo('#stockHistoryDiv' + time_break[i])
-          $('<tr>', {id: 'stockHistoryTitles' + time_break[i]}).appendTo('#table_'+ time_break[i])
-          $('#stockHistoryTitles' + time_break[i]).empty()
-          $('<th>', {id: 'tableTitleSymbol', text: 'Stock'}).appendTo('#stockHistoryTitles' + time_break[i])
-          $('<th>', {id: 'tableTitleDate', text: 'Date'}).appendTo('#stockHistoryTitles' + time_break[i])
-          $('<th>', {text: 'High'}).appendTo('#stockHistoryTitles' + time_break[i])
-          $('<th>', {text: 'Low'}).appendTo('#stockHistoryTitles' + time_break[i])
-          $('<th>', {text: 'Average'}).appendTo('#stockHistoryTitles' + time_break[i])
-          $('<th>', {text: 'Volume'}).appendTo('#stockHistoryTitles' + time_break[i])
-          $('<th>', {text: 'Change Over Time'}).appendTo('#stockHistoryTitles' + time_break[i])
-        }
-        for(var i = 0 ; i < 7 ; i++) {
-          $('<tr>', {id: '1w' + i}).appendTo('#table_1w')
-          $('<td>', {id: '1w' + i + 'symbol', text: ''}).appendTo('#1w' + i)
-          $('<td>', {id: '1w' + i + 'date', text: ''}).appendTo('#1w' + i)
-          $('<td>', {id: '1w' + i + 'high', text: ''}).appendTo('#1w' + i)
-          $('<td>', {id: '1w' + i + 'low', text: ''}).appendTo('#1w' + i)
-          $('<td>', {id: '1w' + i + 'close', text: ''}).appendTo('#1w' + i)
-          $('<td>', {id: '1w' + i + 'volume', text: ''}).appendTo('#1w' + i)
-          $('<td>', {id: '1w' + i + 'change', text: ''}).appendTo('#1w' + i)
-        }
-        for(var i = 0 ; i < 186 ; i++) {
-          $('<tr>', {id: '6m' + i}).appendTo('#table_6m')
-          $('<td>', {id: '6m' + i + 'symbol', text: ''}).appendTo('#6m' + i)
-          $('<td>', {id: '6m' + i + 'date', text: ''}).appendTo('#6m' + i)
-          $('<td>', {id: '6m' + i + 'high', text: ''}).appendTo('#6m' + i)
-          $('<td>', {id: '6m' + i + 'low', text: ''}).appendTo('#6m' + i)
-          $('<td>', {id: '6m' + i + 'close', text: ''}).appendTo('#6m' + i)
-          $('<td>', {id: '6m' + i + 'volume', text: ''}).appendTo('#6m' + i)
-          $('<td>', {id: '6m' + i + 'change', text: ''}).appendTo('#6m' + i)
-        }
-        for(var i = 0 ; i < 366 ; i++) {
-          $('<tr>', {id: '1y' + i}).appendTo('#table_1y')
-          $('<td>', {id: '1y' + i + 'symbol', text: ''}).appendTo('#1y' + i)
-          $('<td>', {id: '1y' + i + 'date', text: ''}).appendTo('#1y' + i)
-          $('<td>', {id: '1y' + i + 'high', text: ''}).appendTo('#1y' + i)
-          $('<td>', {id: '1y' + i + 'low', text: ''}).appendTo('#1y' + i)
-          $('<td>', {id: '1y' + i + 'close', text: ''}).appendTo('#1y' + i)
-          $('<td>', {id: '1y' + i + 'volume', text: ''}).appendTo('#1y' + i)
-          $('<td>', {id: '1y' + i + 'change', text: ''}).appendTo('#1y' + i)
-        }
+        createTable('1w', 7)
+        createTable('6m', 186)
+        createTable('1y', 366)
+
         $('#stockHistoryDiv1y').hide()
         $('#stockHistoryDiv6m').hide()
         $('#stockHistoryDiv1w').hide()
@@ -219,7 +280,6 @@ $('#Login').click(function(){
         $('#stockHistory').hide()
         //get text in search bar
         $('#searchButton').click(function(){
-//          $("#stockHistoryDetails").empty()
           var searchSymbol = document.getElementById('searchSymbol').value
           searchSymbol = searchSymbol.toUpperCase()
           if (!symbols.includes(searchSymbol)){
@@ -244,17 +304,8 @@ $('#Login').click(function(){
                   type:'GET',
                   url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
                   success:function(data){
-                    var data_size = data.length;
-                    console.log(data)
-                    for(var i = 0 ; i < 7 ; i++) {
-                      $('#1w' + i + 'symbol').text(searchSymbol)
-                      $('#1w' + i + 'date').text(data[data.length-i-1].date)
-                      $('#1w' + i + 'high').text(data[data.length-i-1].high)
-                      $('#1w' + i + 'low').text(data[data.length-i-1].low)
-                      $('#1w' + i + 'close').text(data[data.length-i-1].close)
-                      $('#1w' + i + 'volume').text(data[data.length-i-1].volume)
-                      $('#1w' + i + 'change').text(data[data.length-i-1].change)
-                    }
+                    updateTableValues('1w', data, 7, searchSymbol)
+//                    console.log(data)
                   }
                 })
               })
@@ -267,17 +318,8 @@ $('#Login').click(function(){
                   type:'GET',
                   url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
                   success:function(data){
-                    var data_size = data.length;
-                    console.log(data)
-                    for(var i = 0 ; i < 120 ; i++) {
-                      $('#6m' + i + 'symbol').text(searchSymbol)
-                      $('#6m' + i + 'date').text(data[data.length-i-1].date)
-                      $('#6m' + i + 'high').text(data[data.length-i-1].high)
-                      $('#6m' + i + 'low').text(data[data.length-i-1].low)
-                      $('#6m' + i + 'close').text(data[data.length-i-1].close)
-                      $('#6m' + i + 'volume').text(data[data.length-i-1].volume)
-                      $('#6m' + i + 'change').text(data[data.length-i-1].change)
-                    }
+//                    console.log(data)
+                    updateTableValues('6m', data, 120, searchSymbol)
                   }
                 })
               })
@@ -290,17 +332,9 @@ $('#Login').click(function(){
                   type:'GET',
                   url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
                   success:function(data){
-                    var data_size = data.length;
-                    console.log(data)
-                    for(var i = 0 ; i < 253 ; i++) {
-                      $('#1y' + i + 'symbol').text(searchSymbol)
-                      $('#1y' + i + 'date').text(data[data.length-i-1].date)
-                      $('#1y' + i + 'high').text(data[data.length-i-1].high)
-                      $('#1y' + i + 'low').text(data[data.length-i-1].low)
-                      $('#1y' + i + 'close').text(data[data.length-i-1].close)
-                      $('#1y' + i + 'volume').text(data[data.length-i-1].volume)
-                      $('#1y' + i + 'change').text(data[data.length-i-1].change)
-                    }
+//                    console.log(data)
+                    updateTableValues('1y', data, 253, searchSymbol)
+
                   }
                 })
               })
@@ -440,4 +474,91 @@ function isInt(value) {
   return !isNaN(value) &&
          parseInt(Number(value)) == value &&
          !isNaN(parseInt(value, 10));
+}
+
+function verifyFieldsNotEmpty(num_of_fields, fields_array) {
+  for(var i  = 0 ; i < num_of_fields ; i++) {
+    if(fields_array[i] === '') {
+      window.alert('Unable to proceed. All fields must be filled.')
+      return false
+    }
+  }
+  return true
+}
+
+function resetNewUserFields() {
+  document.getElementById('newCash_input').value = ''
+  document.getElementById('newPassword_input1').value = ''
+  document.getElementById('newPassword_input2').value = ''
+  document.getElementById('newUsername_input').value = ''
+}
+
+function resetAddCashFields() {
+  document.getElementById('addCashValue_input').value = ''
+  document.getElementById('addCashUser_input').value = ''
+}
+
+function verifyUsername(username) {
+  var username_isValid = /^\w+$/.test(username);
+  if(!username_isValid) {
+    window.alert('Unable to proceed. Usernames can only contain letters, numerical digits and underscores.')
+    return false
+  }
+  else if(/* placeholder: check if the username is already taken (backend required)*/ false) {
+    window.alert('Unable to proceed. This username has already been taken.')
+    return false
+  }
+  return true
+}
+
+function verifyCash(cash){
+  var cash_isValid = /^[0-9]+$/.test(cash);
+  if(!cash_isValid) {
+    window.alert('Unable to proceed. Cash value is invalid.')
+    return false
+  }
+  return true
+}
+
+
+function createTable(table_type, num_rows) {
+  for(var i = 0 ; i < 3 ; i++) {
+    $('<table>', {id: 'table_' + table_type}).appendTo('#stockHistoryDiv' + table_type)
+    $('<tr>', {id: 'stockHistoryTitles' + table_type}).appendTo('#table_'+ table_type)
+    $('#stockHistoryTitles' + table_type).empty()
+    $('<th>', {id: 'tableTitleSymbol', text: 'Stock'}).appendTo('#stockHistoryTitles' + table_type)
+    $('<th>', {id: 'tableTitleDate', text: 'Date'}).appendTo('#stockHistoryTitles' + table_type)
+    $('<th>', {text: 'Open'}).appendTo('#stockHistoryTitles' + table_type)
+    $('<th>', {text: 'Close'}).appendTo('#stockHistoryTitles' + table_type)
+    $('<th>', {text: 'High'}).appendTo('#stockHistoryTitles' + table_type)
+    $('<th>', {text: 'Low'}).appendTo('#stockHistoryTitles' + table_type)
+    $('<th>', {text: 'Volume'}).appendTo('#stockHistoryTitles' + table_type)
+    $('<th>', {text: 'Change Over Time'}).appendTo('#stockHistoryTitles' + table_type)
+  }
+
+  for(var i = 0 ; i < num_rows ; i++) {
+    $('<tr>', {id: table_type + i}).appendTo('#table_' + table_type)
+    $('<td>', {id: table_type + i + 'symbol', text: ''}).appendTo('#' + table_type + i)
+    $('<td>', {id: table_type + i + 'date', text: ''}).appendTo('#' + table_type + i)
+    $('<td>', {id: table_type + i + 'open', text: ''}).appendTo('#' + table_type + i)
+    $('<td>', {id: table_type + i + 'close', text: ''}).appendTo('#' + table_type + i)
+    $('<td>', {id: table_type + i + 'high', text: ''}).appendTo('#' + table_type + i)
+    $('<td>', {id: table_type + i + 'low', text: ''}).appendTo('#' + table_type + i)
+    $('<td>', {id: table_type + i + 'volume', text: ''}).appendTo('#' + table_type + i)
+    $('<td>', {id: table_type + i + 'change', text: ''}).appendTo('#' + table_type + i)
+  }
+}
+
+function updateTableValues(table_type, data, num_rows, searchSymbol) {
+  var data_size = data.length;
+  for(var i = 0 ; i < num_rows ; i++) {
+    $('#' + table_type + i + 'symbol').text(searchSymbol)
+    $('#' + table_type + i + 'date').text(data[data.length-i-1].date)
+    $('#' + table_type + i + 'open').text(data[data.length-i-1].open)
+    $('#' + table_type + i + 'close').text(data[data.length-i-1].close)
+    $('#' + table_type + i + 'high').text(data[data.length-i-1].high)
+    $('#' + table_type + i + 'low').text(data[data.length-i-1].low)
+    $('#' + table_type + i + 'volume').text(data[data.length-i-1].volume)
+    $('#' + table_type + i + 'change').text(data[data.length-i-1].change)
+  }
 }
