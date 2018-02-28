@@ -109,18 +109,67 @@ $('#Login').click(function(){
         $('<p>', {id: 'stockPrice', text: ''}).appendTo('#stockInfo')
         $('<div>', {id: 'stockHistory'}).appendTo('#stockInfo')
         $('<ul>', {id: 'histories'}).appendTo('#stockHistory')
-        $('<button>', {id: '1day', text: '1 Day History'}).appendTo('#stockHistory')
-        $('<button>', {id: '1month', text: '1 Month History'}).appendTo('#stockHistory')
-        $('<button>', {id: '6month', text: '6 Month History'}).appendTo('#stockHistory')
+        $('<button>', {id: 'one_week', text: '1-Week History'}).appendTo('#stockHistory')
+        $('<button>', {id: 'six_months', text: '6-Month History'}).appendTo('#stockHistory')
+        $('<button>', {id: 'one_year', text: '1-Year History'}).appendTo('#stockHistory')
 
+        var time_break = ['1w', '6m', '1y']
 
         $('<div>', {id: 'stockHistoryDetails'}).appendTo('#stockHistory')
-        $('<table>', {id: 'stockHistoryTable'}).appendTo('#stockHistoryDetails')
+        $('<div>', {id: 'stockHistoryDiv1w'}).appendTo('#stockHistoryDetails')
+        $('<div>', {id: 'stockHistoryDiv6m'}).appendTo('#stockHistoryDetails')
+        $('<div>', {id: 'stockHistoryDiv1y'}).appendTo('#stockHistoryDetails')
+
+        for(var i = 0 ; i < 3 ; i++) {
+          $('<table>', {id: 'table_' + time_break[i]}).appendTo('#stockHistoryDiv' + time_break[i])
+          $('<tr>', {id: 'stockHistoryTitles' + time_break[i]}).appendTo('#table_'+ time_break[i])
+          $('#stockHistoryTitles' + time_break[i]).empty()
+          $('<th>', {id: 'tableTitleSymbol', text: 'Stock'}).appendTo('#stockHistoryTitles' + time_break[i])
+          $('<th>', {id: 'tableTitleDate', text: 'Date'}).appendTo('#stockHistoryTitles' + time_break[i])
+          $('<th>', {text: 'High'}).appendTo('#stockHistoryTitles' + time_break[i])
+          $('<th>', {text: 'Low'}).appendTo('#stockHistoryTitles' + time_break[i])
+          $('<th>', {text: 'Average'}).appendTo('#stockHistoryTitles' + time_break[i])
+          $('<th>', {text: 'Volume'}).appendTo('#stockHistoryTitles' + time_break[i])
+          $('<th>', {text: 'Change Over Time'}).appendTo('#stockHistoryTitles' + time_break[i])
+        }
+        for(var i = 0 ; i < 7 ; i++) {
+          $('<tr>', {id: '1w' + i}).appendTo('#table_1w')
+          $('<td>', {id: '1w' + i + 'symbol', text: ''}).appendTo('#1w' + i)
+          $('<td>', {id: '1w' + i + 'date', text: ''}).appendTo('#1w' + i)
+          $('<td>', {id: '1w' + i + 'high', text: ''}).appendTo('#1w' + i)
+          $('<td>', {id: '1w' + i + 'low', text: ''}).appendTo('#1w' + i)
+          $('<td>', {id: '1w' + i + 'close', text: ''}).appendTo('#1w' + i)
+          $('<td>', {id: '1w' + i + 'volume', text: ''}).appendTo('#1w' + i)
+          $('<td>', {id: '1w' + i + 'change', text: ''}).appendTo('#1w' + i)
+        }
+        for(var i = 0 ; i < 186 ; i++) {
+          $('<tr>', {id: '6m' + i}).appendTo('#table_6m')
+          $('<td>', {id: '6m' + i + 'symbol', text: ''}).appendTo('#6m' + i)
+          $('<td>', {id: '6m' + i + 'date', text: ''}).appendTo('#6m' + i)
+          $('<td>', {id: '6m' + i + 'high', text: ''}).appendTo('#6m' + i)
+          $('<td>', {id: '6m' + i + 'low', text: ''}).appendTo('#6m' + i)
+          $('<td>', {id: '6m' + i + 'close', text: ''}).appendTo('#6m' + i)
+          $('<td>', {id: '6m' + i + 'volume', text: ''}).appendTo('#6m' + i)
+          $('<td>', {id: '6m' + i + 'change', text: ''}).appendTo('#6m' + i)
+        }
+        for(var i = 0 ; i < 366 ; i++) {
+          $('<tr>', {id: '1y' + i}).appendTo('#table_1y')
+          $('<td>', {id: '1y' + i + 'symbol', text: ''}).appendTo('#1y' + i)
+          $('<td>', {id: '1y' + i + 'date', text: ''}).appendTo('#1y' + i)
+          $('<td>', {id: '1y' + i + 'high', text: ''}).appendTo('#1y' + i)
+          $('<td>', {id: '1y' + i + 'low', text: ''}).appendTo('#1y' + i)
+          $('<td>', {id: '1y' + i + 'close', text: ''}).appendTo('#1y' + i)
+          $('<td>', {id: '1y' + i + 'volume', text: ''}).appendTo('#1y' + i)
+          $('<td>', {id: '1y' + i + 'change', text: ''}).appendTo('#1y' + i)
+        }
+        $('#stockHistoryDiv1y').hide()
+        $('#stockHistoryDiv6m').hide()
+        $('#stockHistoryDiv1w').hide()
 
         $('#stockHistory').hide()
         //get text in search bar
         $('#searchButton').click(function(){
-          $("#stockHistoryTable").empty()
+//          $("#stockHistoryDetails").empty()
           var searchSymbol = document.getElementById('searchSymbol').value
           searchSymbol = searchSymbol.toUpperCase()
           if (!symbols.includes(searchSymbol)){
@@ -137,58 +186,75 @@ $('#Login').click(function(){
               $('#stockHistory').show()
 
 
-              $('#1day').click(function(){
-                $("#stockHistoryTable").empty()
-
-                var date = new Date()
-    //            console.log(date)
-                var month = date.getMonth() + 1
-                var monthString = month.toString()
-                var day = date.getDate()
-                var year = date.getFullYear()
-                var time = "09:30" //unused
-
-                var url_extend;
-                if (month < 10) url_extend = '/stock/'+ searchSymbol +'/chart/date/' + year.toString() + '0' + month.toString() + day.toString()
-                else url_extend = '/stock/'+ searchSymbol +'/chart/date/' + year.toString() + month.toString() + day.toString()
-
-//                console.log(url_extend)
-
-                $('<tr>', {id: 'stockHistoryTitles'}).appendTo('#stockHistoryTable')
-                $("#stockHistoryTitles").empty()
-                $('<th>', {id: 'tableTitleSymbol', text: 'Stock'}).appendTo('#stockHistoryTitles')
-                $('<th>', {id: 'tableTitleDate', text: 'Date'}).appendTo('#stockHistoryTitles')
-                $('<th>', {id: 'tableTitleMinute', text: 'Time'}).appendTo('#stockHistoryTitles')
-                $('<th>', {text: 'High'}).appendTo('#stockHistoryTitles')
-                $('<th>', {text: 'Low'}).appendTo('#stockHistoryTitles')
-                $('<th>', {text: 'Volume'}).appendTo('#stockHistoryTitles')
-                $('<th>', {text: 'Change Over Time'}).appendTo('#stockHistoryTitles')
-
+              $('#one_week').click(function(){
+                $('#stockHistoryDiv1y').hide()
+                $('#stockHistoryDiv6m').hide()
+                $('#stockHistoryDiv1w').show()
                 $.ajax({
                   type:'GET',
-//                  async: false,
-                  url: api.concat(url_extend),
+                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
                   success:function(data){
-//                    console.log(data)
-
-                    for(var i = 1; i < data.length; i += 5) {
-                      $('#rowEntry' + i.toString() + searchSymbol).empty()
-                      $('<tr>', {id: 'rowEntry' + i.toString() + searchSymbol}).appendTo('#stockHistoryTable')
-                      $('<td>', {id: 'obj_symbol',text: searchSymbol}).appendTo('#rowEntry' + i.toString() + searchSymbol)
-                      var objDate = data[i].date
-                      // format date so it is easier to read for users
-                      $('<td>', {id: 'obj_date', text: objDate.slice(0,4) + '-' + objDate.slice(4,6) + "-" + objDate.slice(6,8)}).appendTo('#rowEntry' + i.toString() + searchSymbol)
-                      $('<td>', {id: 'obj_label',text: data[i].label}).appendTo('#rowEntry' + i.toString() + searchSymbol)
-                      $('<td>', {id: 'obj_high',text: data[i].high}).appendTo('#rowEntry' + i.toString() + searchSymbol)
-                      $('<td>', {id: 'obj_low',text: data[i].low}).appendTo('#rowEntry' + i.toString() + searchSymbol)
-                      $('<td>', {id: 'obj_volume',text: data[i].volume}).appendTo('#rowEntry' + i.toString() + searchSymbol)
-                      $('<td>', {id: 'obj_changeOverTime',text: data[i].changeOverTime}).appendTo('#rowEntry' + i.toString() + searchSymbol)
-
+                    var data_size = data.length;
+                    console.log(data)
+                    for(var i = 0 ; i < 7 ; i++) {
+                      $('#1w' + i + 'symbol').text(searchSymbol)
+                      $('#1w' + i + 'date').text(data[data.length-i-1].date)
+                      $('#1w' + i + 'high').text(data[data.length-i-1].high)
+                      $('#1w' + i + 'low').text(data[data.length-i-1].low)
+                      $('#1w' + i + 'close').text(data[data.length-i-1].close)
+                      $('#1w' + i + 'volume').text(data[data.length-i-1].volume)
+                      $('#1w' + i + 'change').text(data[data.length-i-1].change)
                     }
                   }
                 })
-
               })
+
+              $('#six_months').click(function(){
+                $('#stockHistoryDiv1w').hide()
+                $('#stockHistoryDiv1y').hide()
+                $('#stockHistoryDiv6m').show()
+                $.ajax({
+                  type:'GET',
+                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+                  success:function(data){
+                    var data_size = data.length;
+                    console.log(data)
+                    for(var i = 0 ; i < 120 ; i++) {
+                      $('#6m' + i + 'symbol').text(searchSymbol)
+                      $('#6m' + i + 'date').text(data[data.length-i-1].date)
+                      $('#6m' + i + 'high').text(data[data.length-i-1].high)
+                      $('#6m' + i + 'low').text(data[data.length-i-1].low)
+                      $('#6m' + i + 'close').text(data[data.length-i-1].close)
+                      $('#6m' + i + 'volume').text(data[data.length-i-1].volume)
+                      $('#6m' + i + 'change').text(data[data.length-i-1].change)
+                    }
+                  }
+                })
+              })
+
+              $('#one_year').click(function(){
+                $('#stockHistoryDiv1w').hide()
+                $('#stockHistoryDiv6m').hide()
+                $('#stockHistoryDiv1y').show()
+                $.ajax({
+                  type:'GET',
+                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+                  success:function(data){
+                    var data_size = data.length;
+                    console.log(data)
+                    for(var i = 0 ; i < 253 ; i++) {
+                      $('#1y' + i + 'symbol').text(searchSymbol)
+                      $('#1y' + i + 'date').text(data[data.length-i-1].date)
+                      $('#1y' + i + 'high').text(data[data.length-i-1].high)
+                      $('#1y' + i + 'low').text(data[data.length-i-1].low)
+                      $('#1y' + i + 'close').text(data[data.length-i-1].close)
+                      $('#1y' + i + 'volume').text(data[data.length-i-1].volume)
+                      $('#1y' + i + 'change').text(data[data.length-i-1].change)
+                    }
+                  }
+                })
+              })
+
 
 
             }
@@ -324,8 +390,4 @@ function isInt(value) {
   return !isNaN(value) &&
          parseInt(Number(value)) == value &&
          !isNaN(parseInt(value, 10));
-}
-
-function resetRow(i, func) {
-
 }
