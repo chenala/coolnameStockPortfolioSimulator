@@ -2,12 +2,62 @@ var api = 'https://api.iextrading.com/1.0'
 
 $('#Login').click(function(){
   var username = document.getElementById('uname').value
-  if (username === 'admin'){
+  if (username === ''){
     //if it is admin role
     $('.username').hide()
     $('.password').hide()
     $('.login').hide()
     $('<p>').appendTo('body').text("welcome " + username)
+
+    //The object 'users' holds data about all users on the system
+
+    var user1 = {
+      'Username': 'User1',
+      'Cash': 1000,
+      'Holdings': ['AAPL', 'FB'],
+      'StockQuantity': [1,2]
+    }
+    var user2 = {
+      'Username': 'User2',
+      'Cash': 100,
+      'Holdings': ['FB'],
+      'StockQuantity': [3]
+    }
+    var user3 = {
+      'Username': 'User3',
+      'Cash': 750,
+      'Holdings': ['MSFT'],
+      'StockQuantity': [2]
+    }
+    var users = [user1, user2, user3]
+
+    //Display user data
+    var adminPanel = $('<div>').appendTo('body')
+    $('<p>').appendTo(adminPanel).text('User Data:')
+
+    console.log(users.length)
+    for (var i = 0; i < users.length; i++) {
+      var portfolioWorth = 0
+      console.log(users[i].Cash)
+      portfolioWorth = portfolioWorth + users[i].Cash
+      var stockWorth = 0
+      for (var stock in user.Holdings) {
+        var url = api.concat('/stock/' + stock + '/delayed-quote')
+        $.ajax({
+          type:'GET',
+          url: url,
+          success:function(data){
+              var ticker = data.symbol
+              stockWorth = stockWorth + parseFloat(parseFloat(parseFloat(stock[ticker]) * parseFloat(data.delayedPrice))).toFixed(2)
+          }
+        })
+      }
+      portfolioWorth = portfolioWorth + stockWorth
+      $('<li>', {text: "User: " + user + "    Cash: " + user.Cash + "    Holdings: " + user.Holdings  + "    Total Portfolio Value: " + portfolioWorth,
+        //id: userData
+      }).appendTo(adminPanel)
+    }
+
   } else{
     //if it is a user role
     $('.username').hide()
