@@ -2,7 +2,7 @@ var api = 'https://api.iextrading.com/1.0'
 
 $('#Login').click(function(){
   var username = document.getElementById('uname').value
-  if (username === ''){
+  if (username === 'admin'){
     //if it is admin role
     $('.username').hide()
     $('.password').hide()
@@ -34,30 +34,67 @@ $('#Login').click(function(){
     //Display user data
     var adminPanel = $('<div>').appendTo('body')
     $('<p>').appendTo(adminPanel).text('User Data:')
-/*
-    console.log(users.length)
+
+//begin
     for (var i = 0; i < users.length; i++) {
-      var portfolioWorth = 0
-      console.log(users[i].Cash)
-      portfolioWorth = portfolioWorth + users[i].Cash
       var stockWorth = 0
-      for (var stock in user.Holdings) {
-        var url = api.concat('/stock/' + stock + '/delayed-quote')
+
+      $('<p>', {
+        text: 'User: ' + users[i].Username,
+        id: 'user' + users[i].Username
+      }).appendTo(adminPanel)
+
+      $('<p>', {
+        text: 'Cash: ' + users[i].Cash,
+        id: 'userCash' + users[i].Username
+      }).appendTo(adminPanel)
+
+      $('<p>', {
+        text: 'Portfolio Value: ' + users[i].Cash,
+        id: 'userPortfolioValue' + users[i].Username
+      }).appendTo(adminPanel)
+
+      $('<p>', {
+        text: 'Holdings: ' + users[i].Holdings,
+        id: 'userHoldings' + users[i].Username
+      }).appendTo(adminPanel)
+
+      $('<p>', {
+        text: 'Holding Quantities: ' + users[i].StockQuantity,
+        id: 'HoldingQuantities' + users[i].Username
+      }).appendTo(adminPanel)
+
+      var prices = {}
+
+      for (var m = 0; m < (users[i].Holdings).length; m++) {
+        var url = api.concat('/stock/' + users[i].Holdings[m] + '/delayed-quote')
+        var quantity = users[i].StockQuantity[m]
+        var id = users[i].Username
+        var money = users[i].Cash
         $.ajax({
-          type:'GET',
+          type: 'GET',
           url: url,
-          success:function(data){
-              var ticker = data.symbol
-              stockWorth = stockWorth + parseFloat(parseFloat(parseFloat(stock[ticker]) * parseFloat(data.delayedPrice))).toFixed(2)
+          success:function(data) {
+            var ticker = data.symbol
+            var stockPrice = data.delayedPrice
+            prices[ticker] = stockPrice
+            for (var c = 0; c < users.length; c++) {
+              var portfolioWorth = users[c].Cash
+              for (var n = 0; n < (users[c].Holdings).length; n++) {
+                if (Object.keys(prices).includes(users[c].Holdings[n])) {
+                  stockWorth = parseFloat(parseFloat(parseFloat(users[c].StockQuantity[n]) * parseFloat(prices[users[c].Holdings[n]]))).toFixed(2)
+                  portfolioWorth = parseFloat(portfolioWorth) + parseFloat(stockWorth)
+                  $('#userPortfolioValue' + users[c].Username).text("Portfolio Value: " + portfolioWorth.toFixed(2))
+                }
+              }
+            }
           }
         })
       }
-      portfolioWorth = portfolioWorth + stockWorth
-      $('<li>', {text: "User: " + user + "    Cash: " + user.Cash + "    Holdings: " + user.Holdings  + "    Total Portfolio Value: " + portfolioWorth,
-        //id: userData
-      }).appendTo(adminPanel)
     }
-*/
+
+
+//end
 
     // Admin operations
     $('<div>', {id: 'admin_op_div'}).appendTo('body')
