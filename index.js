@@ -50,8 +50,8 @@ $('#Login').click(function(){
       }).appendTo(adminPanel)
 
       $('<p>', {
-        text: 'Portfolio Value: ' + users[i].Cash,
-        id: 'userPortfolioValue' + users[i].Username
+        text: 'Stock Value: ' + users[i].Cash,
+        id: 'userStockValue' + users[i].Username
       }).appendTo(adminPanel)
 
       $('<p>', {
@@ -79,12 +79,12 @@ $('#Login').click(function(){
             var stockPrice = data.delayedPrice
             prices[ticker] = stockPrice
             for (var c = 0; c < users.length; c++) {
-              var portfolioWorth = users[c].Cash
+              var stockValue = 0
               for (var n = 0; n < (users[c].Holdings).length; n++) {
                 if (Object.keys(prices).includes(users[c].Holdings[n])) {
                   stockWorth = parseFloat(parseFloat(parseFloat(users[c].StockQuantity[n]) * parseFloat(prices[users[c].Holdings[n]]))).toFixed(2)
-                  portfolioWorth = parseFloat(portfolioWorth) + parseFloat(stockWorth)
-                  $('#userPortfolioValue' + users[c].Username).text("Portfolio Value: " + portfolioWorth.toFixed(2))
+                  stockWorth = parseFloat(stockWorth) + parseFloat(stockValue)
+                  $('#userStockValue' + users[c].Username).text("Stock Value: " + stockWorth.toFixed(2))
                 }
               }
             }
@@ -141,7 +141,43 @@ $('#Login').click(function(){
           if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
             if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
             else if(verifyUsername(new_username) && verifyCash(new_cash)) {
+              console.log(users.length)
               // TODO: create the user (requires backend)
+              var new_user = {
+                'Username': new_username,
+                'Cash': parseInt(new_cash),
+                'Holdings': [],
+                'StockQuantity': []
+              }
+              users.push(new_user)
+              console.log(users.length)
+              console.log(users)
+
+              $('<p>', {
+                text: 'User: ' + new_username,
+                id: 'user' + new_username
+              }).appendTo(adminPanel)
+
+              $('<p>', {
+                text: 'Cash: ' + new_cash,
+                id: 'userCash' + new_username
+              }).appendTo(adminPanel)
+
+              $('<p>', {
+                text: 'Stock Value: ' + 0,
+                id: 'userStockValue' + new_username
+              }).appendTo(adminPanel)
+
+              $('<p>', {
+                text: 'Holdings: ',
+                id: 'userHoldings' + new_username
+              }).appendTo(adminPanel)
+
+              $('<p>', {
+                text: 'Holding Quantities: ',
+                id: 'HoldingQuantities' + new_username
+              }).appendTo(adminPanel)
+
               window.alert('Success! User has been created. The username is: ' + new_username)
               newUserWindow_isOpen = false
               $('#newUser_div').hide()
@@ -173,6 +209,15 @@ $('#Login').click(function(){
 
           if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername(recipient) && verifyCash(amount)) {
             // add amount to the recipient
+            for (var h = 0; h < users.length; h++) {
+              if (recipient === users[h].Username) {
+                console.log(users[h].Username)
+                console.log(users[h].Cash)
+                console.log(users[h].amount)
+                users[h].Cash = parseFloat(users[h].Cash) + parseFloat(amount)
+                $('#userCash' + recipient).text("Cash: " + users[h].Cash)
+              }
+            }
             window.alert('Succcess! Amount has been added to the recipient.')
             addCashWindow_isOpen = false
             $('#addCash_div').hide()
@@ -188,13 +233,6 @@ $('#Login').click(function(){
 
       }
     })
-
-
-
-
-
-
-
 
   } else{
     //if it is a user role
