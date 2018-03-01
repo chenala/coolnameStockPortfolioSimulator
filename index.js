@@ -361,6 +361,7 @@ $('#Login').click(function(){
             type:'GET',
             url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
             success:function(data){
+              console.log(data)
               var price = data.delayedPrice
               if ((quantity * price) > cash){
                 window.alert("You don't have enough cash to by this many.")
@@ -404,6 +405,9 @@ $('#Login').click(function(){
                   $('#cash').text('Cash: ' + cash)
                 }
               }
+            },
+            error:function() {
+                alert("Error: There is problem with stock symbol");
             }
           })
 
