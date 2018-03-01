@@ -317,6 +317,9 @@ $('#Login').click(function(){
         $('#stockHistory').hide()
         //get text in search bar
         $('#searchButton').click(function(){
+          $('#stockHistoryDiv1y').hide()
+          $('#stockHistoryDiv6m').hide()
+          $('#stockHistoryDiv1w').hide()
           var searchSymbol = document.getElementById('searchSymbol').value
           searchSymbol = searchSymbol.toUpperCase()
           if (!symbols.includes(searchSymbol)){
@@ -333,50 +336,54 @@ $('#Login').click(function(){
               $('#stockHistory').show()
 
 
-              $('#one_week').click(function(){
-                $('#stockHistoryDiv1y').hide()
-                $('#stockHistoryDiv6m').hide()
-                $('#stockHistoryDiv1w').show()
-                $.ajax({
-                  type:'GET',
-                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-                  success:function(data){
-                    updateTableValues('1w', data, 7, searchSymbol)
+            }
+          })
+        })
+
+        $('#one_week').click(function(){
+          var searchSymbol = document.getElementById('searchSymbol').value
+          searchSymbol = searchSymbol.toUpperCase()
+          $('#stockHistoryDiv1y').hide()
+          $('#stockHistoryDiv6m').hide()
+          $('#stockHistoryDiv1w').show()
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+            success:function(data){
+              updateTableValues('1w', data, 7, searchSymbol)
 //                    console.log(data)
-                  }
-                })
-              })
+            }
+          })
+        })
 
-              $('#six_months').click(function(){
-                $('#stockHistoryDiv1w').hide()
-                $('#stockHistoryDiv1y').hide()
-                $('#stockHistoryDiv6m').show()
-                $.ajax({
-                  type:'GET',
-                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-                  success:function(data){
+        $('#six_months').click(function(){
+          var searchSymbol = document.getElementById('searchSymbol').value
+          searchSymbol = searchSymbol.toUpperCase()
+          $('#stockHistoryDiv1w').hide()
+          $('#stockHistoryDiv1y').hide()
+          $('#stockHistoryDiv6m').show()
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+            success:function(data){
 //                    console.log(data)
-                    updateTableValues('6m', data, 120, searchSymbol)
-                  }
-                })
-              })
+              updateTableValues('6m', data, 120, searchSymbol)
+            }
+          })
+        })
 
-              $('#one_year').click(function(){
-                $('#stockHistoryDiv1w').hide()
-                $('#stockHistoryDiv6m').hide()
-                $('#stockHistoryDiv1y').show()
-                $.ajax({
-                  type:'GET',
-                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-                  success:function(data){
+        $('#one_year').click(function(){
+          var searchSymbol = document.getElementById('searchSymbol').value
+          searchSymbol = searchSymbol.toUpperCase()
+          $('#stockHistoryDiv1w').hide()
+          $('#stockHistoryDiv6m').hide()
+          $('#stockHistoryDiv1y').show()
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+            success:function(data){
 //                    console.log(data)
-                    updateTableValues('1y', data, 253, searchSymbol)
-
-                  }
-                })
-              })
-
-
+              updateTableValues('1y', data, 253, searchSymbol)
 
             }
           })
@@ -398,7 +405,6 @@ $('#Login').click(function(){
             type:'GET',
             url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
             success:function(data){
-              console.log(data)
               var price = data.delayedPrice
               if ((quantity * price) > cash){
                 window.alert("You don't have enough cash to by this many.")
@@ -511,6 +517,7 @@ $('#Login').click(function(){
   }//end of else
 })
 
+//helper function to check if a variable is integer
 function isInt(value) {
   return !isNaN(value) &&
          parseInt(Number(value)) == value &&
