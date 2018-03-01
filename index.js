@@ -35,7 +35,6 @@ $('#Login').click(function(){
     var adminPanel = $('<div>').appendTo('body')
     $('<p>').appendTo(adminPanel).text('User Data:')
 
-//begin
     for (var i = 0; i < users.length; i++) {
       var stockWorth = 0
 
@@ -93,9 +92,6 @@ $('#Login').click(function(){
       }
     }
 
-
-//end
-
     // Admin operations
     $('<div>', {id: 'admin_op_div'}).appendTo('body')
     $('<button>', {id: 'newUser_button', text:'Add New User'}).appendTo('#admin_op_div')
@@ -141,7 +137,6 @@ $('#Login').click(function(){
           if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
             if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
             else if(verifyUsername(new_username) && verifyCash(new_cash)) {
-              console.log(users.length)
               // TODO: create the user (requires backend)
               var new_user = {
                 'Username': new_username,
@@ -150,8 +145,6 @@ $('#Login').click(function(){
                 'StockQuantity': []
               }
               users.push(new_user)
-              console.log(users.length)
-              console.log(users)
 
               $('<p>', {
                 text: 'User: ' + new_username,
@@ -211,9 +204,6 @@ $('#Login').click(function(){
             // add amount to the recipient
             for (var h = 0; h < users.length; h++) {
               if (recipient === users[h].Username) {
-                console.log(users[h].Username)
-                console.log(users[h].Cash)
-                console.log(users[h].amount)
                 users[h].Cash = parseFloat(users[h].Cash) + parseFloat(amount)
                 $('#userCash' + recipient).text("Cash: " + users[h].Cash)
               }
