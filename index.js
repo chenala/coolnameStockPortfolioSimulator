@@ -361,7 +361,6 @@ $('#Login').click(function(){
             type:'GET',
             url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
             success:function(data){
-              console.log(data)
               var price = data.delayedPrice
               if ((quantity * price) > cash){
                 window.alert("You don't have enough cash to by this many.")
@@ -474,6 +473,7 @@ $('#Login').click(function(){
   }//end of else
 })
 
+//helper function to check if a variable is integer
 function isInt(value) {
   return !isNaN(value) &&
          parseInt(Number(value)) == value &&
