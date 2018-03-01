@@ -280,6 +280,9 @@ $('#Login').click(function(){
         $('#stockHistory').hide()
         //get text in search bar
         $('#searchButton').click(function(){
+          $('#stockHistoryDiv1y').hide()
+          $('#stockHistoryDiv6m').hide()
+          $('#stockHistoryDiv1w').hide()
           var searchSymbol = document.getElementById('searchSymbol').value
           searchSymbol = searchSymbol.toUpperCase()
           if (!symbols.includes(searchSymbol)){
@@ -290,6 +293,7 @@ $('#Login').click(function(){
             url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
             success:function(data){
               var price = data.delayedPrice
+              var symbol = data.symbol
               $('#stockTicker').text(searchSymbol)
               $('#stockCompany').text(symbolCompany[searchSymbol])
               $('#stockPrice').text('Price: ' + data.delayedPrice)
@@ -302,9 +306,9 @@ $('#Login').click(function(){
                 $('#stockHistoryDiv1w').show()
                 $.ajax({
                   type:'GET',
-                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+                  url: api.concat('/stock/' + symbol + '/chart/1y'),
                   success:function(data){
-                    updateTableValues('1w', data, 7, searchSymbol)
+                    updateTableValues('1w', data, 7, symbol)
 //                    console.log(data)
                   }
                 })
@@ -316,10 +320,10 @@ $('#Login').click(function(){
                 $('#stockHistoryDiv6m').show()
                 $.ajax({
                   type:'GET',
-                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+                  url: api.concat('/stock/' + symbol + '/chart/1y'),
                   success:function(data){
 //                    console.log(data)
-                    updateTableValues('6m', data, 120, searchSymbol)
+                    updateTableValues('6m', data, 120, symbol)
                   }
                 })
               })
@@ -330,10 +334,10 @@ $('#Login').click(function(){
                 $('#stockHistoryDiv1y').show()
                 $.ajax({
                   type:'GET',
-                  url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+                  url: api.concat('/stock/' + symbol + '/chart/1y'),
                   success:function(data){
 //                    console.log(data)
-                    updateTableValues('1y', data, 253, searchSymbol)
+                    updateTableValues('1y', data, 253, symbol)
 
                   }
                 })
