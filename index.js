@@ -293,57 +293,60 @@ $('#Login').click(function(){
             url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
             success:function(data){
               var price = data.delayedPrice
-              var symbol = data.symbol
               $('#stockTicker').text(searchSymbol)
               $('#stockCompany').text(symbolCompany[searchSymbol])
               $('#stockPrice').text('Price: ' + data.delayedPrice)
               $('#stockHistory').show()
 
 
-              $('#one_week').click(function(){
-                $('#stockHistoryDiv1y').hide()
-                $('#stockHistoryDiv6m').hide()
-                $('#stockHistoryDiv1w').show()
-                $.ajax({
-                  type:'GET',
-                  url: api.concat('/stock/' + symbol + '/chart/1y'),
-                  success:function(data){
-                    updateTableValues('1w', data, 7, symbol)
+            }
+          })
+        })
+
+        $('#one_week').click(function(){
+          var searchSymbol = document.getElementById('searchSymbol').value
+          searchSymbol = searchSymbol.toUpperCase()
+          $('#stockHistoryDiv1y').hide()
+          $('#stockHistoryDiv6m').hide()
+          $('#stockHistoryDiv1w').show()
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+            success:function(data){
+              updateTableValues('1w', data, 7, searchSymbol)
 //                    console.log(data)
-                  }
-                })
-              })
+            }
+          })
+        })
 
-              $('#six_months').click(function(){
-                $('#stockHistoryDiv1w').hide()
-                $('#stockHistoryDiv1y').hide()
-                $('#stockHistoryDiv6m').show()
-                $.ajax({
-                  type:'GET',
-                  url: api.concat('/stock/' + symbol + '/chart/1y'),
-                  success:function(data){
+        $('#six_months').click(function(){
+          var searchSymbol = document.getElementById('searchSymbol').value
+          searchSymbol = searchSymbol.toUpperCase()
+          $('#stockHistoryDiv1w').hide()
+          $('#stockHistoryDiv1y').hide()
+          $('#stockHistoryDiv6m').show()
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+            success:function(data){
 //                    console.log(data)
-                    updateTableValues('6m', data, 120, symbol)
-                  }
-                })
-              })
+              updateTableValues('6m', data, 120, searchSymbol)
+            }
+          })
+        })
 
-              $('#one_year').click(function(){
-                $('#stockHistoryDiv1w').hide()
-                $('#stockHistoryDiv6m').hide()
-                $('#stockHistoryDiv1y').show()
-                $.ajax({
-                  type:'GET',
-                  url: api.concat('/stock/' + symbol + '/chart/1y'),
-                  success:function(data){
+        $('#one_year').click(function(){
+          var searchSymbol = document.getElementById('searchSymbol').value
+          searchSymbol = searchSymbol.toUpperCase()
+          $('#stockHistoryDiv1w').hide()
+          $('#stockHistoryDiv6m').hide()
+          $('#stockHistoryDiv1y').show()
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+            success:function(data){
 //                    console.log(data)
-                    updateTableValues('1y', data, 253, symbol)
-
-                  }
-                })
-              })
-
-
+              updateTableValues('1y', data, 253, searchSymbol)
 
             }
           })
