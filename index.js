@@ -348,7 +348,6 @@ $('#Login').click(function(){
         $('#stockHistory').hide()
         //get text in search bar
         $('#searchButton').click(function(){
-          $('.form_container2').show()
           $('#stockHistoryDiv1y').hide()
           $('#stockHistoryDiv6m').hide()
           $('#stockHistoryDiv1w').hide()
@@ -361,6 +360,7 @@ $('#Login').click(function(){
             type:'GET',
             url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
             success:function(data){
+              $('.form_container2').show()
               var price = data.delayedPrice
               $('#stockTicker').text(searchSymbol)
               $('#stockCompany').text(symbolCompany[searchSymbol])
