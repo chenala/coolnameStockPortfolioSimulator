@@ -1,0 +1,15 @@
+.input_1{
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.login{
+  text-align: center;
+}
+
+.form_container >div{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
