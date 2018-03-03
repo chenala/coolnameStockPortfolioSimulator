@@ -1,14 +1,17 @@
 var api = 'https://api.iextrading.com/1.0'
 
 $('.form_container2').hide()
+$('.admin_container').hide()
 
 $('#Login').click(function(){
   var username = document.getElementById('uname').value
   if (username === 'admin'){
+    $('.form_container').hide()
+    $('.admin_container').show()
     //if it is admin role
     $('.input_1').hide()
     $('.login').hide()
-    $('<p>').appendTo('.form_container').text("welcome " + username)
+    $('<p>').appendTo('.admin_container').text("welcome " + username)
 
     //The object 'users' holds data about all users on the system
 
@@ -33,13 +36,13 @@ $('#Login').click(function(){
     var users = [user1, user2, user3]
 
     //Display user data
-    var adminPanel = $('<div>').appendTo('.form_container')
-    $('<p>').appendTo(adminPanel).text('User Data:')
+    var adminPanel = $('<div>').appendTo('.admin_container')
+    $('<h1>').appendTo(adminPanel).text('User Data:')
 
     for (var i = 0; i < users.length; i++) {
       var stockWorth = 0
 
-      $('<p>', {
+      $('<h2>', {
         text: 'User: ' + users[i].Username,
         id: 'user' + users[i].Username
       }).appendTo(adminPanel)
@@ -94,7 +97,7 @@ $('#Login').click(function(){
     }
 
     // Admin operations
-    $('<div>', {id: 'admin_op_div'}).appendTo('.form_container')
+    $('<div>', {id: 'admin_op_div'}).appendTo('.admin_container')
     $('<button>', {id: 'newUser_button', text:'Add New User'}).appendTo('#admin_op_div')
     $('<button>', {id: 'addCash_button', text:'Give Cash to Existing User'}).appendTo('#admin_op_div')
 
@@ -147,7 +150,7 @@ $('#Login').click(function(){
               }
               users.push(new_user)
 
-              $('<p>', {
+              $('<h2>', {
                 text: 'User: ' + new_username,
                 id: 'user' + new_username
               }).appendTo(adminPanel)
