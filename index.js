@@ -1,13 +1,14 @@
 var api = 'https://api.iextrading.com/1.0'
 
+$('.form_container2').hide()
+
 $('#Login').click(function(){
   var username = document.getElementById('uname').value
   if (username === 'admin'){
     //if it is admin role
-    $('.username').hide()
-    $('.password').hide()
+    $('.input_1').hide()
     $('.login').hide()
-    $('<p>').appendTo('body').text("welcome " + username)
+    $('<p>').appendTo('.form_container').text("welcome " + username)
 
     //The object 'users' holds data about all users on the system
 
@@ -32,7 +33,7 @@ $('#Login').click(function(){
     var users = [user1, user2, user3]
 
     //Display user data
-    var adminPanel = $('<div>').appendTo('body')
+    var adminPanel = $('<div>').appendTo('.form_container')
     $('<p>').appendTo(adminPanel).text('User Data:')
 
     for (var i = 0; i < users.length; i++) {
@@ -93,7 +94,7 @@ $('#Login').click(function(){
     }
 
     // Admin operations
-    $('<div>', {id: 'admin_op_div'}).appendTo('body')
+    $('<div>', {id: 'admin_op_div'}).appendTo('.form_container')
     $('<button>', {id: 'newUser_button', text:'Add New User'}).appendTo('#admin_op_div')
     $('<button>', {id: 'addCash_button', text:'Give Cash to Existing User'}).appendTo('#admin_op_div')
 
@@ -226,12 +227,11 @@ $('#Login').click(function(){
 
   } else{
     //if it is a user role
-    $('.username').hide()
-    $('.password').hide()
+    $('.input_1').hide()
     $('.login').hide()
-    $('<p>').appendTo('body').text("welcome " + username)
+    $('<p>').appendTo('.form_container').text("welcome " + username)
 
-    var standing = $('<div>').appendTo('body')
+    var standing = $('<div>').appendTo('.form_container')
     $('<p>').appendTo(standing).text('Your current standing:')
 
     //assume user has these stocks and cash
@@ -258,7 +258,7 @@ $('#Login').click(function(){
     }).appendTo(standing)
 
     //display list of stocks
-    var stockList = $('<div>').appendTo('body')
+    var stockList = $('<div>').appendTo('.form_container')
     var list = $('<ul>', {
       id: 'stockList'
     }).appendTo(stockList)
@@ -283,7 +283,7 @@ $('#Login').click(function(){
     }
 
     //buystock button and sell
-    $('<div>', {id: 'buyStock'}).appendTo('body')
+    $('<div>', {id: 'buyStock'}).appendTo('.form_container')
     $('<br>').appendTo('#buyStock')
     $('<label>', {text: 'Stock '}).appendTo('#buyStock')
     $('<input>', {id: 'buySymbol', type: 'text', placeholder: 'Enter symbol of the stock you want'}).appendTo('#buyStock')
@@ -293,8 +293,8 @@ $('#Login').click(function(){
     $('<button>', {text: 'Sell',id: 'sellButton'}).appendTo('#buyStock')
 
     //search stocks
-    $('<br>').appendTo('body')
-    $('<div>', {id: 'searchStock'}).appendTo('body')
+    $('<br>').appendTo('.form_container')
+    $('<div>', {id: 'searchStock'}).appendTo('.form_container')
     $('<label>', {text: 'Search Stock '}).appendTo('#searchStock')
     $('<input>', {id: 'searchSymbol', type: 'text', placeholder: 'Enter Stock Symbol'}).appendTo('#searchStock')
     $('<button>', {text: 'Search',id: 'searchButton'}).appendTo('#searchStock')
@@ -319,11 +319,11 @@ $('#Login').click(function(){
         })
 
         //display stock info
-        $('<div>', {id: 'stockInfo'}).appendTo('body')
-        $('<h1>', {id: 'stockTicker', text: ''}).appendTo('#stockInfo')
-        $('<h2>', {id: 'stockCompany', text: ''}).appendTo('#stockInfo')
-        $('<p>', {id: 'stockPrice', text: ''}).appendTo('#stockInfo')
-        $('<div>', {id: 'stockHistory'}).appendTo('#stockInfo')
+        // $('<div>', {id: 'stockInfo'}).appendTo('.form_container')
+        $('<h1>', {id: 'stockTicker', text: ''}).appendTo('.form_container2')
+        $('<h2>', {id: 'stockCompany', text: ''}).appendTo('.form_container2')
+        $('<p>', {id: 'stockPrice', text: ''}).appendTo('.form_container2')
+        $('<div>', {id: 'stockHistory'}).appendTo('.form_container2')
         $('<ul>', {id: 'histories'}).appendTo('#stockHistory')
         $('<button>', {id: 'one_week', text: '1-Week History'}).appendTo('#stockHistory')
         $('<button>', {id: 'six_months', text: '6-Month History'}).appendTo('#stockHistory')
@@ -345,6 +345,7 @@ $('#Login').click(function(){
         $('#stockHistory').hide()
         //get text in search bar
         $('#searchButton').click(function(){
+          $('.form_container2').show()
           $('#stockHistoryDiv1y').hide()
           $('#stockHistoryDiv6m').hide()
           $('#stockHistoryDiv1w').hide()
