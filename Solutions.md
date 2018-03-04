@@ -10,4 +10,4 @@ User can buy or sell stock by entering stock symbol and quantity.
 User can search stock information and see price history of this stock.
 
 Admin:
-Admin user can view all the users in the system and how much free money. Admin user can grant money to users.
+Admin user can view all the users in the system and how much free money they have, what stocks they are holding and how much they are in total in current market price. Admin user can grant money to users. Admin user can add new user to the system.
