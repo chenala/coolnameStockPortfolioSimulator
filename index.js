@@ -8,15 +8,9 @@ $('#Login').click(function(){
   if (username === 'admin'){
     $('.form_container').hide()
     $('.admin_container').show()
-    //if it is admin role
-/*    $('.input_1').hide()
-    $('.login').hide()
-    */
     $('#login_container').hide()
-    $('<p>').appendTo('.admin_container').text("welcome " + username)
 
     //The object 'users' holds data about all users on the system
-
     var user1 = {
       'Username': 'User1',
       'Cash': 1000,
@@ -37,89 +31,12 @@ $('#Login').click(function(){
     }
     var users = [user1, user2, user3]
 
-    //Display user data
-    var adminPanel = $('<div>').appendTo('.admin_container')
-    $('<h1>').appendTo(adminPanel).text('User Data:')
+    $('#welcome_admin').text('Welcome, ' + username)
 
-    for (var i = 0; i < users.length; i++) {
-      var stockWorth = 0
+    display_userlist(users)
 
-      $('<h2>', {
-        text: 'User: ' + users[i].Username,
-        id: 'user' + users[i].Username
-      }).appendTo(adminPanel)
-
-      $('<p>', {
-        text: 'Cash: ' + users[i].Cash,
-        id: 'userCash' + users[i].Username
-      }).appendTo(adminPanel)
-
-      $('<p>', {
-        text: 'Stock Value: ' + users[i].Cash,
-        id: 'userStockValue' + users[i].Username
-      }).appendTo(adminPanel)
-
-      $('<p>', {
-        text: 'Holdings: ' + users[i].Holdings,
-        id: 'userHoldings' + users[i].Username
-      }).appendTo(adminPanel)
-
-      $('<p>', {
-        text: 'Holding Quantities: ' + users[i].StockQuantity,
-        id: 'HoldingQuantities' + users[i].Username
-      }).appendTo(adminPanel)
-
-      var prices = {}
-
-      for (var m = 0; m < (users[i].Holdings).length; m++) {
-        var url = api.concat('/stock/' + users[i].Holdings[m] + '/delayed-quote')
-        var quantity = users[i].StockQuantity[m]
-        var id = users[i].Username
-        var money = users[i].Cash
-        $.ajax({
-          type: 'GET',
-          url: url,
-          success:function(data) {
-            var ticker = data.symbol
-            var stockPrice = data.delayedPrice
-            prices[ticker] = stockPrice
-            for (var c = 0; c < users.length; c++) {
-              var stockValue = 0
-              for (var n = 0; n < (users[c].Holdings).length; n++) {
-                if (Object.keys(prices).includes(users[c].Holdings[n])) {
-                  stockWorth = parseFloat(parseFloat(parseFloat(users[c].StockQuantity[n]) * parseFloat(prices[users[c].Holdings[n]]))).toFixed(2)
-                  stockWorth = parseFloat(stockWorth) + parseFloat(stockValue)
-                  $('#userStockValue' + users[c].Username).text("Stock Value: " + stockWorth.toFixed(2))
-                }
-              }
-            }
-          }
-        })
-      }
-    }
 
     // Admin operations
-/*
-    $('<div>', {id: 'admin_op_div'}).appendTo('.admin_container')
-    $('<button>', {id: 'newUser_button', text:'Add New User'}).appendTo('#admin_op_div')
-    $('<button>', {id: 'addCash_button', text:'Give Cash to Existing User'}).appendTo('#admin_op_div')
-
-    $('<div>', {id: 'newUser_div'}).appendTo('#admin_op_div')
-    $('<h3>', {text: 'Create User'}).appendTo('#newUser_div')
-    $('<input>', {id: 'newUsername_input', type: 'text', placeholder: 'Enter new Username'}).appendTo('#newUser_div')
-    $('<input>', {id: 'newPassword_input1', type: 'password', placeholder: 'Enter password'}).appendTo('#newUser_div')
-    $('<input>', {id: 'newPassword_input2', type: 'password', placeholder: 'Re-enter password'}).appendTo('#newUser_div')
-    $('<input>', {id: 'newCash_input', type: 'text', placeholder: 'Enter cash amount'}).appendTo('#newUser_div')
-    $('<button>', {id: 'newUser_submit', text: 'Create User'}).appendTo('#newUser_div')
-    $('<button>', {id: 'newUser_cancel', text: 'Cancel'}).appendTo('#newUser_div')
-
-    $('<div>', {id: 'addCash_div'}).appendTo('#admin_op_div')
-    $('<h3>', {text: 'Give Cash to User'}).appendTo('#addCash_div')
-    $('<input>', {id: 'addCashUser_input', type: 'text', placeholder: 'Enter username of recipient'}).appendTo('#addCash_div')
-    $('<input>', {id: 'addCashValue_input', type: 'text', placeholder: 'Enter cash amount'}).appendTo('#addCash_div')
-    $('<button>', {id: 'addCash_submit', text: 'Give Cash'}).appendTo('#addCash_div')
-    $('<button>', {id: 'addCash_cancel', text: 'Cancel'}).appendTo('#addCash_div')
-*/
     $('#addCash_div').hide()
     $('#newUser_div').hide()
 
@@ -136,6 +53,7 @@ $('#Login').click(function(){
               window.alert('Unable to proceed. This username already exists.')
           }
           else {
+            // create new user
             var new_user = {
               'Username': new_username,
               'Cash': parseInt(new_cash),
@@ -143,34 +61,10 @@ $('#Login').click(function(){
               'StockQuantity': []
             }
             users.push(new_user)
-//            console.log(users)
 
-            $('<h2>', {
-              text: 'User: ' + new_username,
-              id: 'user' + new_username
-            }).appendTo(adminPanel)
-
-            $('<p>', {
-              text: 'Cash: ' + new_cash,
-              id: 'userCash' + new_username
-            }).appendTo(adminPanel)
-
-            $('<p>', {
-              text: 'Stock Value: ' + 0,
-              id: 'userStockValue' + new_username
-            }).appendTo(adminPanel)
-
-            $('<p>', {
-              text: 'Holdings: ',
-              id: 'userHoldings' + new_username
-            }).appendTo(adminPanel)
-
-            $('<p>', {
-              text: 'Holding Quantities: ',
-              id: 'HoldingQuantities' + new_username
-            }).appendTo(adminPanel)
-
+            display_userlist(users)
             window.alert('Success! User has been created. The username is: ' + new_username)
+            // close newUser form
             newUserWindow_isOpen = false
             $('#newUser_div').hide()
           }
@@ -209,7 +103,7 @@ $('#Login').click(function(){
     })
 
     $('#addCash_cancel').click(function() {
-      // close newUser form and reset all fields
+      // close addCash form and reset all fields
       addCashWindow_isOpen = false
       $('#addCash_div').hide()
       resetAddCashFields()
@@ -226,9 +120,6 @@ $('#Login').click(function(){
         resetNewUserFields()
         newUserWindow_isOpen = true;
         $('#newUser_div').show()
-
-
-
       }
     })
 
@@ -241,18 +132,13 @@ $('#Login').click(function(){
         addCashWindow_isOpen = true;
         $('#addCash_div').show()
         resetAddCashFields()
-
-
-
       }
     })
 
-  } else{
+  }
+
+  else{
     //if it is a user role
-/*
-    $('.input_1').hide()
-    $('.login').hide()
-*/
     $('#login_container').hide()
 
     $('<p>').appendTo('.form_container').text("welcome " + username)
@@ -572,6 +458,8 @@ $('#Login').click(function(){
   }//end of else
 })
 
+
+// HELPER FUNCTIONS
 //helper function to check if a variable is integer
 function isInt(value) {
   return !isNaN(value) &&
@@ -629,7 +517,65 @@ function verifyCash_regex(cash){
 }
 
 function display_userlist(userlist) {
-  
+  $('#userlist_container').empty()
+  for(var i = 0 ; i < userlist.length ; i++) {
+    var cur_entry = $('<div>', {class: 'userlist_entry'}).appendTo('#userlist_container')
+    $('<h2>', {
+      text: 'User: ' + userlist[i].Username,
+      class: 'userlist_entry_username'
+    }).appendTo(cur_entry)
+    $('<p>', {
+      text: 'Cash: ' + userlist[i].Cash,
+      class: 'userlist_entry_cash'
+    }).appendTo(cur_entry)
+
+    $('<p>', {
+      text: 'Stock Value: ' + userlist[i].Cash,
+      class: 'userlist_entry_stockValue'
+    }).appendTo(cur_entry)
+
+    $('<p>', {
+      text: 'Holdings: ' + userlist[i].Holdings,
+      class: 'userlist_entry_holdings'
+    }).appendTo(cur_entry)
+
+    $('<p>', {
+      text: 'Holding Quantities: ' + userlist[i].StockQuantity,
+      class: 'userlist_entry_quantity'
+    }).appendTo(cur_entry)
+  }
+
+  // calculate stock value for each user
+  for (var i = 0; i < userlist.length; i++) {
+    var stockWorth = 0
+    var prices = {}
+
+    for (var m = 0; m < (userlist[i].Holdings).length; m++) {
+      var url = api.concat('/stock/' + userlist[i].Holdings[m] + '/delayed-quote')
+      var quantity = userlist[i].StockQuantity[m]
+      var id = userlist[i].Username
+      var money = userlist[i].Cash
+      $.ajax({
+        type: 'GET',
+        url: url,
+        success:function(data) {
+          var ticker = data.symbol
+          var stockPrice = data.delayedPrice
+          prices[ticker] = stockPrice
+          for (var c = 0; c < userlist.length; c++) {
+            var stockValue = 0
+            for (var n = 0; n < (userlist[c].Holdings).length; n++) {
+              if (Object.keys(prices).includes(userlist[c].Holdings[n])) {
+                stockWorth = parseFloat(parseFloat(parseFloat(userlist[c].StockQuantity[n]) * parseFloat(prices[userlist[c].Holdings[n]]))).toFixed(2)
+                stockWorth = parseFloat(stockWorth) + parseFloat(stockValue)
+                $('#userStockValue' + userlist[c].Username).text("Stock Value: " + stockWorth.toFixed(2))
+              }
+            }
+          }
+        }
+      })
+    }
+  }
 }
 
 
