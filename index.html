@@ -6,7 +6,8 @@
     </head>
     <body>
       <div class="form_container">
-        <div>
+
+        <div id="login_container">
           <h3>Coolname Stock Portfolio Simulator</h3>
           <div class="input_1">
             <label>Username</label>
@@ -20,13 +21,49 @@
             <button id="Login">Login</button>
           </div>
         </div>
+
+
       </div>
+
       <div class="admin_container">
         <h3>Coolname Stock Portfolio Simulator</h3>
+
+        <div id="admin_op_div">
+          <button id="newUser_button">Add New User</button>
+          <button id="addCash_button">Give Cash to Existing User</button>
+
+          <div id="newUser_div">
+            <h3>Create New User</h3>
+            <input id="newUsername_input" type="text" placeholder="Enter new username" required>
+            <input id="newPassword_input1" type="text" placeholder="Enter new password" required>
+            <input id="newPassword_input2" type="text" placeholder="Re-enter password" required>
+            <input id="newCash_input" type="text" placeholder="Enter cash amount" required>
+            <button id="newUser_submit">Create User</button>
+            <button id="newUser_cancel">Cancel</button>
+          </div>
+
+          <div id="addCash_div">
+            <h3>Give Cash to User</h3>
+            <input id="addCashUser_input" type="text" placeholder="Username of Recipient" required>
+            <input id="addCashValue_input" type="text" placeholder="Enter cash amount" required>
+            <button id="addCash_submit">Give Cash</button>
+            <button id="addCash_cancel">Cancel</button>
+          </div>
+
+
+        </div>
+
+
       </div>
-      <div  class="form_container2">
+
+      <div class="form_container2">
       </div>
+
+
     </body>
+
+
+
     <script
       src="https://code.jquery.com/jquery-3.2.1.min.js"
       integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="

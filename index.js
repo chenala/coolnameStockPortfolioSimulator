@@ -9,8 +9,10 @@ $('#Login').click(function(){
     $('.form_container').hide()
     $('.admin_container').show()
     //if it is admin role
-    $('.input_1').hide()
+/*    $('.input_1').hide()
     $('.login').hide()
+    */
+    $('#login_container').hide()
     $('<p>').appendTo('.admin_container').text("welcome " + username)
 
     //The object 'users' holds data about all users on the system
@@ -97,6 +99,7 @@ $('#Login').click(function(){
     }
 
     // Admin operations
+/*
     $('<div>', {id: 'admin_op_div'}).appendTo('.admin_container')
     $('<button>', {id: 'newUser_button', text:'Add New User'}).appendTo('#admin_op_div')
     $('<button>', {id: 'addCash_button', text:'Give Cash to Existing User'}).appendTo('#admin_op_div')
@@ -116,9 +119,101 @@ $('#Login').click(function(){
     $('<input>', {id: 'addCashValue_input', type: 'text', placeholder: 'Enter cash amount'}).appendTo('#addCash_div')
     $('<button>', {id: 'addCash_submit', text: 'Give Cash'}).appendTo('#addCash_div')
     $('<button>', {id: 'addCash_cancel', text: 'Cancel'}).appendTo('#addCash_div')
-
+*/
     $('#addCash_div').hide()
     $('#newUser_div').hide()
+
+    $('#newUser_submit').click(function() {
+      var new_username = document.getElementById('newUsername_input').value
+      var new_cash = document.getElementById('newCash_input').value
+      var new_password1 = document.getElementById('newPassword_input1').value
+      var new_password2 = document.getElementById('newPassword_input2').value
+
+      if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
+        if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
+        else if(verifyUsername_regex(new_username, users) && verifyCash_regex(new_cash)) {
+          if(username_exists(new_username, users)) {
+              window.alert('Unable to proceed. This username already exists.')
+          }
+          else {
+            var new_user = {
+              'Username': new_username,
+              'Cash': parseInt(new_cash),
+              'Holdings': [],
+              'StockQuantity': []
+            }
+            users.push(new_user)
+//            console.log(users)
+
+            $('<h2>', {
+              text: 'User: ' + new_username,
+              id: 'user' + new_username
+            }).appendTo(adminPanel)
+
+            $('<p>', {
+              text: 'Cash: ' + new_cash,
+              id: 'userCash' + new_username
+            }).appendTo(adminPanel)
+
+            $('<p>', {
+              text: 'Stock Value: ' + 0,
+              id: 'userStockValue' + new_username
+            }).appendTo(adminPanel)
+
+            $('<p>', {
+              text: 'Holdings: ',
+              id: 'userHoldings' + new_username
+            }).appendTo(adminPanel)
+
+            $('<p>', {
+              text: 'Holding Quantities: ',
+              id: 'HoldingQuantities' + new_username
+            }).appendTo(adminPanel)
+
+            window.alert('Success! User has been created. The username is: ' + new_username)
+            newUserWindow_isOpen = false
+            $('#newUser_div').hide()
+          }
+        }
+      }
+    })
+
+    $('#newUser_cancel').click(function() {
+      // close newUser form and reset all fields
+      newUserWindow_isOpen = false
+      $('#newUser_div').hide()
+      resetNewUserFields()
+    })
+
+    $('#addCash_submit').click(function(){
+      var recipient = document.getElementById('addCashUser_input').value
+      var amount = document.getElementById('addCashValue_input').value
+
+      if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername_regex(recipient) && verifyCash_regex(amount)) {
+        if(!username_exists(recipient, users)) {
+            window.alert('Unable to proceed. This username does not exist.')
+        }
+        else {
+          // add amount to the recipient
+          for (var h = 0; h < users.length; h++) {
+            if (recipient === users[h].Username) {
+              users[h].Cash = parseFloat(users[h].Cash) + parseFloat(amount)
+              $('#userCash' + recipient).text("Cash: " + users[h].Cash)
+            }
+          }
+          window.alert('Succcess! Amount has been added to the recipient.')
+          addCashWindow_isOpen = false
+          $('#addCash_div').hide()
+        }
+      }
+    })
+
+    $('#addCash_cancel').click(function() {
+      // close newUser form and reset all fields
+      addCashWindow_isOpen = false
+      $('#addCash_div').hide()
+      resetAddCashFields()
+    })
 
     var newUserWindow_isOpen = false;
     var addCashWindow_isOpen = false;
@@ -132,66 +227,8 @@ $('#Login').click(function(){
         newUserWindow_isOpen = true;
         $('#newUser_div').show()
 
-        $('#newUser_submit').click(function() {
-          var new_username = document.getElementById('newUsername_input').value
-          var new_cash = document.getElementById('newCash_input').value
-          var new_password1 = document.getElementById('newPassword_input1').value
-          var new_password2 = document.getElementById('newPassword_input2').value
 
-          if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
-            if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
-            else if(verifyUsername_regex(new_username, users) && verifyCash_regex(new_cash)) {
-              if(username_exists(new_username, users)) {
-                  window.alert('Unable to proceed. This username already exists.')
-              }
-              else {
-                var new_user = {
-                  'Username': new_username,
-                  'Cash': parseInt(new_cash),
-                  'Holdings': [],
-                  'StockQuantity': []
-                }
-                users.push(new_user)
-    //            console.log(users)
 
-                $('<h2>', {
-                  text: 'User: ' + new_username,
-                  id: 'user' + new_username
-                }).appendTo(adminPanel)
-
-                $('<p>', {
-                  text: 'Cash: ' + new_cash,
-                  id: 'userCash' + new_username
-                }).appendTo(adminPanel)
-
-                $('<p>', {
-                  text: 'Stock Value: ' + 0,
-                  id: 'userStockValue' + new_username
-                }).appendTo(adminPanel)
-
-                $('<p>', {
-                  text: 'Holdings: ',
-                  id: 'userHoldings' + new_username
-                }).appendTo(adminPanel)
-
-                $('<p>', {
-                  text: 'Holding Quantities: ',
-                  id: 'HoldingQuantities' + new_username
-                }).appendTo(adminPanel)
-
-                window.alert('Success! User has been created. The username is: ' + new_username)
-                newUserWindow_isOpen = false
-                $('#newUser_div').hide()
-              }
-            }
-          }
-        })
-        $('#newUser_cancel').click(function() {
-          // close newUser form and reset all fields
-          newUserWindow_isOpen = false
-          $('#newUser_div').hide()
-          resetNewUserFields()
-        })
       }
     })
 
@@ -205,43 +242,19 @@ $('#Login').click(function(){
         $('#addCash_div').show()
         resetAddCashFields()
 
-        $('#addCash_submit').click(function(){
-          var recipient = document.getElementById('addCashUser_input').value
-          var amount = document.getElementById('addCashValue_input').value
 
-          if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername_regex(recipient) && verifyCash_regex(amount)) {
-            if(!username_exists(recipient, users)) {
-                window.alert('Unable to proceed. This username does not exist.')
-            }
-            else {
-              // add amount to the recipient
-              for (var h = 0; h < users.length; h++) {
-                if (recipient === users[h].Username) {
-                  users[h].Cash = parseFloat(users[h].Cash) + parseFloat(amount)
-                  $('#userCash' + recipient).text("Cash: " + users[h].Cash)
-                }
-              }
-              window.alert('Succcess! Amount has been added to the recipient.')
-              addCashWindow_isOpen = false
-              $('#addCash_div').hide()
-            }
-          }
-        })
-
-        $('#addCash_cancel').click(function() {
-          // close newUser form and reset all fields
-          addCashWindow_isOpen = false
-          $('#addCash_div').hide()
-          resetAddCashFields()
-        })
 
       }
     })
 
   } else{
     //if it is a user role
+/*
     $('.input_1').hide()
     $('.login').hide()
+*/
+    $('#login_container').hide()
+
     $('<p>').appendTo('.form_container').text("welcome " + username)
 
     var standing = $('<div>').appendTo('.form_container')
@@ -613,6 +626,10 @@ function verifyCash_regex(cash){
     return false
   }
   return true
+}
+
+function display_userlist(userlist) {
+  
 }
 
 
