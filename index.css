@@ -47,11 +47,14 @@
 }
 
 h3 {
-  font-size: 300%;
+  font-size: 400%;
   font-family: Calibri, sans-serif;
 }
 
 body {
    background-image: url("background.jpg");
+   background-size: cover;
+   background-repeat: no-repeat;
+   background-position: center center;
    background-color: #cccccc;
 }
