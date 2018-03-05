@@ -1,6 +1,6 @@
 #title {
   text-align: center;
-  color: white;
+  color: black;
   font-size: 200%;
 }
 
@@ -131,66 +131,3 @@ th {
 #quantity , #buySymbol {
   width: 100%;
 }
-
-/*
-.input_1{
-  margin-bottom: 10px;
-  text-align: center;
-  font-size: 300%
-  font-family: Calibri, sans-serif;
-}
-
-.login{
-  text-align: center;
-  font-size: 300%
-  font-family: Calibri, sans-serif;
-}
-
-.form_container {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #ffffff;
-  border-radius: 25px;
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-bottom: 30px;
-  margin-right: 30%;
-}
-
-.form_container2 {
-  position: relative;
-  left: 15%;
-  background-color: #ffffff;
-  border-radius: 25px;
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-bottom: 30px;
-  margin-right: 30%;
-  top: 20vh;
-}
-
-.admin_container {
-  position: relative;
-  background-color: #ffffff;
-  border-radius: 25px;
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-bottom: 30px;
-  margin-right: 30%;
-}
-
-h3 {
-  font-size: 400%;
-  font-family: Calibri, sans-serif;
-}
-
-body {
-   background-image: url("background.jpg");
-   background-size: cover;
-   background-repeat: no-repeat;
-   background-position: center center;
-   background-color: #cccccc;
-}
-*/
