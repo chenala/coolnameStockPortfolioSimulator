@@ -6,6 +6,29 @@ $('#search_stock_all').hide()
 $('#searchStock_container').hide()
 $('#searchStockResults_container').hide()
 
+// admin var
+var users
+var newUserWindow_isOpen = false;
+var addCashWindow_isOpen = false;
+
+// this will contain the information about the user's stocks
+// buy/sell var
+var userStockInfoList = []
+var stocks
+var avgPrice
+var cash
+var marketValue
+var totalProfitLoss
+
+// searchStock var
+var symbols
+var symbolCompany
+var prev
+
+
+
+
+
 $('#Login').click(function(){
   var username = document.getElementById('uname').value
   if (username === 'admin'){
@@ -31,7 +54,7 @@ $('#Login').click(function(){
       'Holdings': ['MSFT'],
       'StockQuantity': [2]
     }
-    var users = [user1, user2, user3]
+    users = [user1, user2, user3]
 
     $('#welcome_admin').text('Welcome, ' + username)
 
@@ -41,101 +64,6 @@ $('#Login').click(function(){
     // Admin operations
     $('#addCash_div').hide()
     $('#newUser_div').hide()
-
-    $('#newUser_submit').click(function() {
-      var new_username = document.getElementById('newUsername_input').value
-      var new_cash = document.getElementById('newCash_input').value
-      var new_password1 = document.getElementById('newPassword_input1').value
-      var new_password2 = document.getElementById('newPassword_input2').value
-
-      if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
-        if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
-        else if(verifyUsername_regex(new_username, users) && verifyCash_regex(new_cash)) {
-          if(username_exists(new_username, users)) {
-              window.alert('Unable to proceed. This username already exists.')
-          }
-          else {
-            // create new user
-            var new_user = {
-              'Username': new_username,
-              'Cash': parseInt(new_cash),
-              'Holdings': [],
-              'StockQuantity': []
-            }
-            users.push(new_user)
-
-            display_userlist(users)
-            window.alert('Success! User has been created. The username is: ' + new_username)
-            // close newUser form
-            newUserWindow_isOpen = false
-            $('#newUser_div').hide()
-          }
-        }
-      }
-    })
-
-    $('#newUser_cancel').click(function() {
-      // close newUser form and reset all fields
-      newUserWindow_isOpen = false
-      $('#newUser_div').hide()
-      resetNewUserFields()
-    })
-
-    $('#addCash_submit').click(function(){
-      var recipient = document.getElementById('addCashUser_input').value
-      var amount = document.getElementById('addCashValue_input').value
-
-      if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername_regex(recipient) && verifyCash_regex(amount)) {
-        if(!username_exists(recipient, users)) {
-            window.alert('Unable to proceed. This username does not exist.')
-        }
-        else {
-          // add amount to the recipient
-          for (var h = 0; h < users.length; h++) {
-            if (recipient === users[h].Username) {
-              users[h].Cash = parseFloat(users[h].Cash) + parseFloat(amount)
-            }
-          }
-          window.alert('Succcess! Amount has been added to the recipient.')
-          addCashWindow_isOpen = false
-          display_userlist(users)
-          $('#addCash_div').hide()
-        }
-      }
-    })
-
-    $('#addCash_cancel').click(function() {
-      // close addCash form and reset all fields
-      addCashWindow_isOpen = false
-      $('#addCash_div').hide()
-      resetAddCashFields()
-    })
-
-    var newUserWindow_isOpen = false;
-    var addCashWindow_isOpen = false;
-    // add new user operation
-    $('#newUser_button').click(function(){
-      if(addCashWindow_isOpen) {
-        window.alert('Please finish or cancel your current request first.')
-      }
-      else if(!newUserWindow_isOpen) {
-        resetNewUserFields()
-        newUserWindow_isOpen = true;
-        $('#newUser_div').show()
-      }
-    })
-
-    // add cash to existing user
-    $('#addCash_button').click(function(){
-      if(newUserWindow_isOpen) {
-        window.alert('Please finish or cancel your current request first.')
-      }
-      else if(!addCashWindow_isOpen) {
-        addCashWindow_isOpen = true;
-        $('#addCash_div').show()
-        resetAddCashFields()
-      }
-    })
 
   }
 
@@ -148,31 +76,18 @@ $('#Login').click(function(){
 
     $('#welcome_user').text('Welcome, ' + username)
 
-    // this will contain the information about the user's stocks
-    var userStockInfoList = []
+    userStockInfoList = []
 
     //assume user has these stocks and cash
     //stocks store how many stocks of each company the user holds
-    var stocks = {'AAPL': 1, 'FB': 1}
+    stocks = {'AAPL': 1, 'FB': 1}
     //avg price holds the avg price of the stock the user bought
-    var avgPrice = {'AAPL': 100, 'FB': 100}
-    var cash = 1000
-    var marketValue = 0
-    var totalProfitLoss = 0
+    avgPrice = {'AAPL': 100, 'FB': 100}
+    cash = 1000
+    marketValue = 0
+    totalProfitLoss = 0
 
-    //display cash, total, and profit/loss
-    $('<p>', {
-      text: 'Cash: $' + cash,
-      id: 'cash'
-    }).appendTo('#user_standing_div')
-    $('<p>', {
-      id: 'marketValue',
-      text: 'marketValue' + 0
-    }).appendTo('#user_standing_div')
-    $('<p>', {
-      id: 'totalProfitLoss',
-      text: 'Total Profit/Loss' + 0
-    }).appendTo('#user_standing_div')
+    displayUserStanding(cash, marketValue, totalProfitLoss)
 
 
 
@@ -189,11 +104,7 @@ $('#Login').click(function(){
             $('#marketValue').text("Market Value: $" + marketValue)
             totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[ticker]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[ticker]))).toFixed(2))
             $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
-/*
-            $('<li>', {text: "Stock: " + ticker + "    Quantity: " + stocks[ticker] + "    YourAvgPrice: " + avgPrice[ticker] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     ",
-              id: ticker
-            }).appendTo('#stocklist_list')
-*/
+
             // create an userStockInfo element
             var userStockInfo = {'stock': ticker, 'quantity': stocks[ticker], 'yourAvgPrice': avgPrice[ticker], 'price': data.delayedPrice, 'profit': (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     "}
             userStockInfoList.push(userStockInfo)
@@ -203,9 +114,9 @@ $('#Login').click(function(){
     }
 
 
-    var symbols = []
-    var symbolCompany = {}
-    var prev = 0;
+    symbols = []
+    symbolCompany = {}
+    prev = 0;
     $.ajax({
       type:'GET',
       url: api.concat('/ref-data/symbols'),
@@ -234,246 +145,365 @@ $('#Login').click(function(){
     $('#stockHistoryDiv1w').hide()
 
     $('#stockHistory').hide()
-    //get text in search bar
-    $('#searchButton').click(function(){
-      $('#stockHistoryDiv1y').hide()
-      $('#stockHistoryDiv6m').hide()
-      $('#stockHistoryDiv1w').hide()
-      var searchSymbol = document.getElementById('searchSymbol').value
-      searchSymbol = searchSymbol.toUpperCase()
-      if (!symbols.includes(searchSymbol)){
-        window.alert("The symbol doesn't exist")
-      }
-      else {
-        $('#searchStockResults_container').show()
-        $.ajax({
-          type:'GET',
-          url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
-          success:function(data){
-            var price = data.delayedPrice
-            $('#stockTicker').text(searchSymbol)
-            $('#stockCompany').text(symbolCompany[searchSymbol])
-            $('#stockPrice').text('Price: ' + data.delayedPrice)
-            $('#stockHistory').show()
-
-          }
-        })
-      }
-    })
-
-    $('#one_week').click(function(){
-      var searchSymbol = document.getElementById('searchSymbol').value
-      searchSymbol = searchSymbol.toUpperCase()
-      $('#stockHistoryDiv1y').hide()
-      $('#stockHistoryDiv6m').hide()
-      $('#stockHistoryDiv1w').show()
-      $.ajax({
-        type:'GET',
-        url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-        success:function(data){
-          updateHistoryTableValues('1w', data, 7, searchSymbol)
-        }
-      })
-    })
-
-    $('#six_months').click(function(){
-      var searchSymbol = document.getElementById('searchSymbol').value
-      searchSymbol = searchSymbol.toUpperCase()
-      $('#stockHistoryDiv1w').hide()
-      $('#stockHistoryDiv1y').hide()
-      $('#stockHistoryDiv6m').show()
-      $.ajax({
-        type:'GET',
-        url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-        success:function(data){
-          updateHistoryTableValues('6m', data, 120, searchSymbol)
-        }
-      })
-    })
-
-    $('#one_year').click(function(){
-      var searchSymbol = document.getElementById('searchSymbol').value
-      searchSymbol = searchSymbol.toUpperCase()
-      $('#stockHistoryDiv1w').hide()
-      $('#stockHistoryDiv6m').hide()
-      $('#stockHistoryDiv1y').show()
-      $.ajax({
-        type:'GET',
-        url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-        success:function(data){
-          updateHistoryTableValues('1y', data, 200, searchSymbol)
-        }
-      })
-    })
-
-
-    //buy Stock
-    $('#buyButton').click(function(){
-      if (confirm("Confirm buy these stocks?")){
-        var searchSymbol = document.getElementById('buySymbol').value
-        searchSymbol = searchSymbol.toUpperCase()
-        //record quantity
-        var quantity = document.getElementById('quantity').value
-        if (!verifyDigitsOnly_regex(quantity)){
-          window.alert("Quantity is not a positive integer.")
-        } else {
-          $.ajax({
-            type:'GET',
-            url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
-            success:function(data){
-              var price = data.delayedPrice
-              if ((quantity * price) > cash){
-                window.alert("You don't have enough cash to by this many.")
-              } else{
-                if (Object.keys(avgPrice).includes(searchSymbol) && stocks[searchSymbol] != 0){
-                  //if the stock exists, calculate avg price you bought it
-                  var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
-                  var totalValueAfter = totalValueBefore + price*quantity
-                  //update total profit and loss
-                  totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
-                  //update avg price
-                  stocks[searchSymbol] = parseInt(stocks[searchSymbol]) + parseInt(quantity)
-                  avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
-                  //update html
-                  $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
-
-                  for(var k = 0 ; k < userStockInfoList.length ; k++) {
-                    if(userStockInfoList[k].stock === searchSymbol) {
-                      userStockInfoList[k].quantity = stocks[searchSymbol]
-                      userStockInfoList[k].yourAvgPrice = avgPrice[searchSymbol]
-                      userStockInfoList[k].price = data.delayedPrice
-                      userStockInfoList[k].profit = (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2)
-                    }
-                  }
-                  createUserStockTable(userStockInfoList)
-
-                  //calculate market value and profit/loss
-                  marketValue = parseFloat((parseFloat(marketValue) + parseFloat(price*quantity)).toFixed(2))
-                  //update total profit and loss
-                  totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
-                  $('#marketValue').text("Market Value: $" + marketValue)
-                  $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
-                  cash = parseFloat((cash - parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                  $('#cash').text('Cash: $' + cash)
-                } else{
-                  //if the stock doesn't exist
-                  stocks[searchSymbol] = quantity
-                  avgPrice[searchSymbol] = price
-/*
-                  $('<li>', {text: "Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2),
-                    id: searchSymbol
-                  }).appendTo('#stocklist_list')
-*/
-                  // create an userStockInfo element
-                  var userStockInfo = {'stock': searchSymbol, 'quantity': stocks[searchSymbol], 'yourAvgPrice': avgPrice[searchSymbol], 'price': data.delayedPrice, 'profit': (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2)}
-                  userStockInfoList.push(userStockInfo)
-                  createUserStockTable(userStockInfoList)
-
-
-                  //calculate market value and profit/loss
-                  marketValue = parseFloat((parseFloat(marketValue) + parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                  //update total profit and loss
-                  totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
-                  $('#marketValue').text("Market Value: $" + marketValue)
-                  $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
-                  cash = parseFloat((cash - parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                  $('#cash').text('Cash: $' + cash)
-                }
-              }
-            },
-            error:function() {
-                alert("Error: There is problem with stock symbol");
-            }
-          })
-
-        }
-      }
-    })
-
-    //sell stock
-    $('#sellButton').click(function(){
-      if (confirm("Sell these stocks?")){
-        var searchSymbol = document.getElementById('buySymbol').value
-        searchSymbol = searchSymbol.toUpperCase()
-        //record quantity
-        var quantity = document.getElementById('quantity').value
-        if (!verifyDigitsOnly_regex(quantity)){
-          window.alert("Quantity is not a positive integer.")
-        } else {
-          $.ajax({
-            type:'GET',
-            url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
-            success:function(data){
-              var price = data.delayedPrice
-              if (!Object.keys(avgPrice).includes(searchSymbol)){
-                window.alert("You don't have this stock.")
-              } else{
-                if (quantity > stocks[searchSymbol]){
-                  window.alert("You can't sell more than you have")
-                } else{
-                  var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
-                  var totalValueAfter = totalValueBefore - price*quantity
-                  //update total profit and loss
-                  totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
-                  stocks[searchSymbol] = parseInt(stocks[searchSymbol]) - parseInt(quantity)
-
-                  // quantity is 0
-                  if (stocks[searchSymbol] == 0){
-  //                  document.getElementById(searchSymbol).remove();
-                    avgPrice[searchSymbol] = 0
-                    //calculate market value and profit/loss
-                    marketValue = parseFloat((parseFloat(marketValue) - parseFloat(price*quantity)).toFixed(2))
-                    $('#marketValue').text("Market Value: $" + marketValue)
-                    $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
-                    cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                    $('#cash').text('Cash: $' + cash)
-
-                    // remove table entry if quantity of a stock is 0
-                    for(var k = 0 ; k < userStockInfoList.length ; k++) {
-                      if(userStockInfoList[k].stock === searchSymbol) {
-                        userStockInfoList.splice(k,1)
-                        break
-                      }
-                    }
-
-                  } else{
-                    //update avg price
-                    avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
-                    //update html
-                    $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
-                    //calculate market value and profit/loss
-                    marketValue = parseFloat((parseFloat(marketValue) - parseFloat(price*quantity)).toFixed(2))
-                    //update total profit and loss
-                    totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
-                    $('#marketValue').text("Market Value: $" + marketValue)
-                    $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
-                    cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                    $('#cash').text('Cash: $' + cash)
-
-                    for(var k = 0 ; k < userStockInfoList.length ; k++) {
-                      if(userStockInfoList[k].stock === searchSymbol) {
-                        userStockInfoList[k].quantity = stocks[searchSymbol]
-                        userStockInfoList[k].yourAvgPrice = avgPrice[searchSymbol]
-                        userStockInfoList[k].price = data.delayedPrice
-                        userStockInfoList[k].profit = (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2)
-                      }
-                    }
-
-                  }
-
-                  console.log(userStockInfoList)
-                  createUserStockTable(userStockInfoList)
-                }
-              }
-            }
-          })
-        }
-      }
-    })
-
 
   }//end of else
 })
+
+// Logout
+$('.logout_class').click(function(){
+  // clear login inputs
+  document.getElementById('uname').value = ''
+  document.getElementById('pswrd').value = ''
+
+  // clear the search history input
+  document.getElementById('searchSymbol').value = ''
+  // clear buy/sell inputs
+  document.getElementById('buySymbol').value = ''
+  document.getElementById('quantity').value = ''
+
+  //clear createNewUser inputs
+  resetNewUserFields()
+  //clear giveCash inputs
+  resetAddCashFields()
+
+  $('#admin_container').hide()
+  $('#user_container').hide()
+  $('#searchStock_container').hide()
+  $('#searchStockResults_container').hide()
+  $('#search_stock_all').hide()
+  $('#login_container').show()
+})
+
+
+
+
+// add new user operation
+$('#newUser_button').click(function(){
+  if(addCashWindow_isOpen) {
+    window.alert('Please finish or cancel your current request first.')
+  }
+  else if(!newUserWindow_isOpen) {
+    resetNewUserFields()
+    newUserWindow_isOpen = true;
+    $('#newUser_div').show()
+  }
+})
+
+// add cash to existing user
+$('#addCash_button').click(function(){
+  if(newUserWindow_isOpen) {
+    window.alert('Please finish or cancel your current request first.')
+  }
+  else if(!addCashWindow_isOpen) {
+    addCashWindow_isOpen = true;
+    $('#addCash_div').show()
+    resetAddCashFields()
+  }
+})
+
+$('#addCash_submit').click(function(){
+  var recipient = document.getElementById('addCashUser_input').value
+  var amount = document.getElementById('addCashValue_input').value
+
+  if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername_regex(recipient) && verifyCash_regex(amount)) {
+    if(!username_exists(recipient, users)) {
+        window.alert('Unable to proceed. This username does not exist.')
+    }
+    else {
+      // add amount to the recipient
+      for (var h = 0; h < users.length; h++) {
+        if (recipient === users[h].Username) {
+          users[h].Cash = parseFloat(users[h].Cash) + parseFloat(amount)
+        }
+      }
+      window.alert('Succcess! Amount has been added to the recipient.')
+      addCashWindow_isOpen = false
+      display_userlist(users)
+      $('#addCash_div').hide()
+    }
+  }
+})
+
+$('#addCash_cancel').click(function() {
+  // close addCash form and reset all fields
+  addCashWindow_isOpen = false
+  $('#addCash_div').hide()
+  resetAddCashFields()
+})
+
+$('#newUser_submit').click(function() {
+  var new_username = document.getElementById('newUsername_input').value
+  var new_cash = document.getElementById('newCash_input').value
+  var new_password1 = document.getElementById('newPassword_input1').value
+  var new_password2 = document.getElementById('newPassword_input2').value
+
+  if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
+    if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
+    else if(verifyUsername_regex(new_username, users) && verifyCash_regex(new_cash)) {
+      if(username_exists(new_username, users)) {
+          window.alert('Unable to proceed. This username already exists.')
+      }
+      else {
+        // create new user
+        var new_user = {
+          'Username': new_username,
+          'Cash': parseInt(new_cash),
+          'Holdings': [],
+          'StockQuantity': []
+        }
+        users.push(new_user)
+
+        display_userlist(users)
+        window.alert('Success! User has been created. The username is: ' + new_username)
+        // close newUser form
+        newUserWindow_isOpen = false
+        $('#newUser_div').hide()
+      }
+    }
+  }
+})
+
+$('#newUser_cancel').click(function() {
+  // close newUser form and reset all fields
+  newUserWindow_isOpen = false
+  $('#newUser_div').hide()
+  resetNewUserFields()
+})
+
+$('#one_week').click(function(){
+  var searchSymbol = document.getElementById('searchSymbol').value
+  searchSymbol = searchSymbol.toUpperCase()
+  $('#stockHistoryDiv1y').hide()
+  $('#stockHistoryDiv6m').hide()
+  $('#stockHistoryDiv1w').show()
+  $.ajax({
+    type:'GET',
+    url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+    success:function(data){
+      updateHistoryTableValues('1w', data, 7, searchSymbol)
+    }
+  })
+})
+
+$('#six_months').click(function(){
+  var searchSymbol = document.getElementById('searchSymbol').value
+  searchSymbol = searchSymbol.toUpperCase()
+  $('#stockHistoryDiv1w').hide()
+  $('#stockHistoryDiv1y').hide()
+  $('#stockHistoryDiv6m').show()
+  $.ajax({
+    type:'GET',
+    url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+    success:function(data){
+      updateHistoryTableValues('6m', data, 120, searchSymbol)
+    }
+  })
+})
+
+$('#one_year').click(function(){
+  var searchSymbol = document.getElementById('searchSymbol').value
+  searchSymbol = searchSymbol.toUpperCase()
+  $('#stockHistoryDiv1w').hide()
+  $('#stockHistoryDiv6m').hide()
+  $('#stockHistoryDiv1y').show()
+  $.ajax({
+    type:'GET',
+    url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+    success:function(data){
+      updateHistoryTableValues('1y', data, 200, searchSymbol)
+    }
+  })
+})
+
+
+//get text in search bar
+$('#searchButton').click(function(){
+  $('#stockHistoryDiv1y').hide()
+  $('#stockHistoryDiv6m').hide()
+  $('#stockHistoryDiv1w').hide()
+  var searchSymbol = document.getElementById('searchSymbol').value
+  searchSymbol = searchSymbol.toUpperCase()
+  if (!symbols.includes(searchSymbol)){
+    window.alert("The symbol doesn't exist")
+  }
+  else {
+    $('#searchStockResults_container').show()
+    $.ajax({
+      type:'GET',
+      url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
+      success:function(data){
+        var price = data.delayedPrice
+        $('#stockTicker').text(searchSymbol)
+        $('#stockCompany').text(symbolCompany[searchSymbol])
+        $('#stockPrice').text('Price: ' + data.delayedPrice)
+        $('#stockHistory').show()
+
+      }
+    })
+  }
+})
+
+//buy Stock
+$('#buyButton').click(function(){
+  if (confirm("Confirm buy these stocks?")){
+    var searchSymbol = document.getElementById('buySymbol').value
+    searchSymbol = searchSymbol.toUpperCase()
+    //record quantity
+    var quantity = document.getElementById('quantity').value
+    if (!verifyDigitsOnly_regex(quantity)){
+      window.alert("Quantity is not a positive integer.")
+    } else {
+      $.ajax({
+        type:'GET',
+        url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
+        success:function(data){
+          var price = data.delayedPrice
+          if ((quantity * price) > cash){
+            window.alert("You don't have enough cash to by this many.")
+          } else{
+            if (Object.keys(avgPrice).includes(searchSymbol) && stocks[searchSymbol] != 0){
+              //if the stock exists, calculate avg price you bought it
+              var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
+              var totalValueAfter = totalValueBefore + price*quantity
+              //update total profit and loss
+              totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+              //update avg price
+              stocks[searchSymbol] = parseInt(stocks[searchSymbol]) + parseInt(quantity)
+              avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
+              //update html
+              $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
+
+              for(var k = 0 ; k < userStockInfoList.length ; k++) {
+                if(userStockInfoList[k].stock === searchSymbol) {
+                  userStockInfoList[k].quantity = stocks[searchSymbol]
+                  userStockInfoList[k].yourAvgPrice = avgPrice[searchSymbol]
+                  userStockInfoList[k].price = data.delayedPrice
+                  userStockInfoList[k].profit = (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2)
+                }
+              }
+              createUserStockTable(userStockInfoList)
+
+              //calculate market value and profit/loss
+              marketValue = parseFloat((parseFloat(marketValue) + parseFloat(price*quantity)).toFixed(2))
+              //update total profit and loss
+              totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+              $('#marketValue').text("Market Value: $" + marketValue)
+              $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
+              cash = parseFloat((cash - parseFloat((price*quantity).toFixed(2))).toFixed(2))
+              $('#cash').text('Cash: $' + cash)
+            } else{
+              //if the stock doesn't exist
+              stocks[searchSymbol] = quantity
+              avgPrice[searchSymbol] = price
+              // create an userStockInfo element
+              var userStockInfo = {'stock': searchSymbol, 'quantity': stocks[searchSymbol], 'yourAvgPrice': avgPrice[searchSymbol], 'price': data.delayedPrice, 'profit': (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2)}
+              userStockInfoList.push(userStockInfo)
+              createUserStockTable(userStockInfoList)
+
+
+              //calculate market value and profit/loss
+              marketValue = parseFloat((parseFloat(marketValue) + parseFloat((price*quantity).toFixed(2))).toFixed(2))
+              //update total profit and loss
+              totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+              $('#marketValue').text("Market Value: $" + marketValue)
+              $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
+              cash = parseFloat((cash - parseFloat((price*quantity).toFixed(2))).toFixed(2))
+              $('#cash').text('Cash: $' + cash)
+            }
+          }
+        },
+        error:function() {
+            alert("Error: There is problem with stock symbol");
+        }
+      })
+
+    }
+  }
+})
+
+//sell stock
+$('#sellButton').click(function(){
+  if (confirm("Sell these stocks?")){
+    var searchSymbol = document.getElementById('buySymbol').value
+    searchSymbol = searchSymbol.toUpperCase()
+    //record quantity
+    var quantity = document.getElementById('quantity').value
+    if (!verifyDigitsOnly_regex(quantity)){
+      window.alert("Quantity is not a positive integer.")
+    } else {
+      $.ajax({
+        type:'GET',
+        url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
+        success:function(data){
+          var price = data.delayedPrice
+          if (!Object.keys(avgPrice).includes(searchSymbol)){
+            window.alert("You don't have this stock.")
+          } else{
+            if (quantity > stocks[searchSymbol]){
+              window.alert("You can't sell more than you have")
+            } else{
+              var totalValueBefore = avgPrice[searchSymbol] * stocks[searchSymbol]
+              var totalValueAfter = totalValueBefore - price*quantity
+              //update total profit and loss
+              totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+              stocks[searchSymbol] = parseInt(stocks[searchSymbol]) - parseInt(quantity)
+
+              // quantity is 0
+              if (stocks[searchSymbol] == 0){
+                avgPrice[searchSymbol] = 0
+                //calculate market value and profit/loss
+                marketValue = parseFloat((parseFloat(marketValue) - parseFloat(price*quantity)).toFixed(2))
+                $('#marketValue').text("Market Value: $" + marketValue)
+                $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
+                cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
+                $('#cash').text('Cash: $' + cash)
+
+                // remove table entry if quantity of a stock is 0
+                for(var k = 0 ; k < userStockInfoList.length ; k++) {
+                  if(userStockInfoList[k].stock === searchSymbol) {
+                    userStockInfoList.splice(k,1)
+                    break
+                  }
+                }
+
+              } else{
+                //update avg price
+                avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
+                //update html
+                $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
+                //calculate market value and profit/loss
+                marketValue = parseFloat((parseFloat(marketValue) - parseFloat(price*quantity)).toFixed(2))
+                //update total profit and loss
+                totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
+                $('#marketValue').text("Market Value: $" + marketValue)
+                $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
+                cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
+                $('#cash').text('Cash: $' + cash)
+
+                for(var k = 0 ; k < userStockInfoList.length ; k++) {
+                  if(userStockInfoList[k].stock === searchSymbol) {
+                    userStockInfoList[k].quantity = stocks[searchSymbol]
+                    userStockInfoList[k].yourAvgPrice = avgPrice[searchSymbol]
+                    userStockInfoList[k].price = data.delayedPrice
+                    userStockInfoList[k].profit = (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2)
+                  }
+                }
+
+              }
+
+              console.log(userStockInfoList)
+              createUserStockTable(userStockInfoList)
+            }
+          }
+        }
+      })
+    }
+  }
+})
+
+
+
+
 
 
 // HELPER FUNCTIONS
@@ -605,8 +635,25 @@ function display_userlist(userlist) {
 }
 
 
+function displayUserStanding(cash, marketValue, totalProfitLoss) {
+  $('#current_standing_div').empty()
+  //display cash, total, and profit/loss
+  $('<p>', {
+    text: 'Cash: $' + cash,
+    id: 'cash'
+  }).appendTo('#current_standing_div')
+  $('<p>', {
+    id: 'marketValue',
+    text: 'marketValue' + marketValue
+  }).appendTo('#current_standing_div')
+  $('<p>', {
+    id: 'totalProfitLoss',
+    text: 'Total Profit/Loss' + totalProfitLoss
+  }).appendTo('#current_standing_div')
+}
+
 function createHistoryTable(table_type, num_rows) {
-  for(var i = 0 ; i < 3 ; i++) {
+    $('#stockHistoryDiv' + table_type).empty()
     $('<table>', {id: 'table_' + table_type}).appendTo('#stockHistoryDiv' + table_type)
     $('<tr>', {id: 'stockHistoryTitles' + table_type}).appendTo('#table_'+ table_type)
     $('#stockHistoryTitles' + table_type).empty()
@@ -618,7 +665,7 @@ function createHistoryTable(table_type, num_rows) {
     $('<th>', {text: 'Low'}).appendTo('#stockHistoryTitles' + table_type)
     $('<th>', {text: 'Volume'}).appendTo('#stockHistoryTitles' + table_type)
     $('<th>', {text: 'Change Over Time'}).appendTo('#stockHistoryTitles' + table_type)
-  }
+
 
   for(var i = 0 ; i < num_rows ; i++) {
     $('<tr>', {id: table_type + i}).appendTo('#table_' + table_type)
