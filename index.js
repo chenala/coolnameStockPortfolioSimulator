@@ -365,7 +365,7 @@ $('#Login').click(function(){
                   }).appendTo('#stocklist_list')
 */
                   // create an userStockInfo element
-                  var userStockInfo = {'stock': ticker, 'quantity': stocks[ticker], 'yourAvgPrice': avgPrice[ticker], 'price': data.delayedPrice, 'profit': (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     "}
+                  var userStockInfo = {'stock': searchSymbol, 'quantity': stocks[searchSymbol], 'yourAvgPrice': avgPrice[searchSymbol], 'price': data.delayedPrice, 'profit': (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2)}
                   userStockInfoList.push(userStockInfo)
                   createUserStockTable(userStockInfoList)
 
