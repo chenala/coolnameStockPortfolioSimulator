@@ -147,7 +147,14 @@ $('#Login').click(function(){
     $('#user_container').show()
     $('#searchStock_container').show()
 
+<<<<<<< HEAD
     $('#welcome_user').text('Welcome, ' + username)
+=======
+    $('<p>').appendTo('.form_container').text("Welcome " + username + "!")
+
+    var standing = $('<div>').appendTo('.form_container')
+    $('<p>').appendTo(standing).text('Your current standing:')
+>>>>>>> 0cba05b3ff4a30846311d0f4f4048cbe92672704
 
     //assume user has these stocks and cash
     //stocks store how many stocks of each company the user holds
@@ -160,7 +167,7 @@ $('#Login').click(function(){
 
     //display cash, total, and profit/loss
     $('<p>', {
-      text: 'Cash: ' + cash,
+      text: 'Cash: $' + cash,
       id: 'cash'
     }).appendTo('#user_standing_div')
     $('<p>', {
@@ -169,9 +176,14 @@ $('#Login').click(function(){
     }).appendTo('#user_standing_div')
     $('<p>', {
       id: 'totalProfitLoss',
+<<<<<<< HEAD
       text: 'Total Profit/Loss' + 0
     }).appendTo('#user_standing_div')
 
+=======
+      text: 'Total Profit/Loss ' + 0
+    }).appendTo(standing)
+>>>>>>> 0cba05b3ff4a30846311d0f4f4048cbe92672704
 
     //display list of stocks
 
@@ -184,10 +196,10 @@ $('#Login').click(function(){
         success:function(data){
             var ticker = data.symbol
             marketValue = parseFloat((parseFloat(marketValue) + parseFloat(parseFloat(stocks[ticker]) * parseFloat(data.delayedPrice))).toFixed(2))
-            $('#marketValue').text("Market Value: " + marketValue)
+            $('#marketValue').text("Market Value: $" + marketValue)
             totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[ticker]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[ticker]))).toFixed(2))
-            $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
-            $('<li>', {text: "Stock: " + ticker + "    Quantity: " + stocks[ticker] + "    YourAvgPrice: " + avgPrice[ticker] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     ",
+            $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
+            $('<li>', {text: "Stock: " + ticker + "    Quantity: " + stocks[ticker] + "    Your Average Purchase Price: $" + avgPrice[ticker] + "    Price: $" + data.delayedPrice + "    Profit/Loss: $" + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     ",
               id: ticker
             }).appendTo('#stocklist_list')
         }
@@ -215,6 +227,7 @@ $('#Login').click(function(){
       }
     })
 
+<<<<<<< HEAD
     // create table and updating entries in the table for stock history
     createTable('1w', 7)
     createTable('6m', 120)
@@ -247,6 +260,53 @@ $('#Login').click(function(){
             $('#stockCompany').text(symbolCompany[searchSymbol])
             $('#stockPrice').text('Price: ' + data.delayedPrice)
             $('#stockHistory').show()
+=======
+        //display stock info
+        // $('<div>', {id: 'stockInfo'}).appendTo('.form_container')
+        $('<h1>', {id: 'stockTicker', text: ''}).appendTo('.form_container2')
+        $('<h2>', {id: 'stockCompany', text: ''}).appendTo('.form_container2')
+        $('<p>', {id: 'stockPrice', text: ''}).appendTo('.form_container2')
+        $('<div>', {id: 'stockHistory'}).appendTo('.form_container2')
+        $('<ul>', {id: 'histories'}).appendTo('#stockHistory')
+        $('<button>', {id: 'one_week', text: '1-Week History'}).appendTo('#stockHistory')
+        $('<button>', {id: 'six_months', text: '6-Month History'}).appendTo('#stockHistory')
+        $('<button>', {id: 'one_year', text: '1-Year History'}).appendTo('#stockHistory')
+
+        $('<div>', {id: 'stockHistoryDetails'}).appendTo('#stockHistory')
+        $('<div>', {id: 'stockHistoryDiv1w'}).appendTo('#stockHistoryDetails')
+        $('<div>', {id: 'stockHistoryDiv6m'}).appendTo('#stockHistoryDetails')
+        $('<div>', {id: 'stockHistoryDiv1y'}).appendTo('#stockHistoryDetails')
+
+        createTable('1w', 7)
+        createTable('6m', 186)
+        createTable('1y', 366)
+
+        $('#stockHistoryDiv1y').hide()
+        $('#stockHistoryDiv6m').hide()
+        $('#stockHistoryDiv1w').hide()
+
+        $('#stockHistory').hide()
+        //get text in search bar
+        $('#searchButton').click(function(){
+          $('#stockHistoryDiv1y').hide()
+          $('#stockHistoryDiv6m').hide()
+          $('#stockHistoryDiv1w').hide()
+          var searchSymbol = document.getElementById('searchSymbol').value
+          searchSymbol = searchSymbol.toUpperCase()
+          if (!symbols.includes(searchSymbol)){
+            window.alert("The symbol doesn't exist")
+          }
+          $.ajax({
+            type:'GET',
+            url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
+            success:function(data){
+              $('.form_container2').show()
+              var price = data.delayedPrice
+              $('#stockTicker').text(searchSymbol)
+              $('#stockCompany').text(symbolCompany[searchSymbol])
+              $('#stockPrice').text('Price: $' + data.delayedPrice)
+              $('#stockHistory').show()
+>>>>>>> 0cba05b3ff4a30846311d0f4f4048cbe92672704
 
 
           }
@@ -333,22 +393,22 @@ $('#Login').click(function(){
                   stocks[searchSymbol] = parseInt(stocks[searchSymbol]) + parseInt(quantity)
                   avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
                   //update html
-                  $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
+                  $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    Your Average Purchase Price: $" + avgPrice[searchSymbol] + "    Price: $" + data.delayedPrice + "    Profit/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
 
                   //calculate market value and profit/loss
                   marketValue = parseFloat((parseFloat(marketValue) + parseFloat(price*quantity)).toFixed(2))
                   //update total profit and loss
                   totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
-                  $('#marketValue').text("Market Value: " + marketValue)
-                  $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
+                  $('#marketValue').text("Market Value: $" + marketValue)
+                  $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
                   cash = parseFloat((cash - parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                  $('#cash').text('Cash: ' + cash)
+                  $('#cash').text('Cash: $' + cash)
                 } else{
                   //if the stock doesn't exist
                   stocks[searchSymbol] = quantity
                   avgPrice[searchSymbol] = price
 
-                  $('<li>', {text: "Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2),
+                  $('<li>', {text: "Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    Your Average Purchase Price: $" + avgPrice[searchSymbol] + "    Price: $" + data.delayedPrice + "    Profit/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2),
                     id: searchSymbol
                   }).appendTo('#stocklist_list')
 
@@ -356,10 +416,10 @@ $('#Login').click(function(){
                   marketValue = parseFloat((parseFloat(marketValue) + parseFloat((price*quantity).toFixed(2))).toFixed(2))
                   //update total profit and loss
                   totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
-                  $('#marketValue').text("Market Value: " + marketValue)
-                  $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
+                  $('#marketValue').text("Market Value: $" + marketValue)
+                  $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
                   cash = parseFloat((cash - parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                  $('#cash').text('Cash: ' + cash)
+                  $('#cash').text('Cash: $' + cash)
                 }
               }
             },
@@ -403,23 +463,23 @@ $('#Login').click(function(){
                     avgPrice[searchSymbol] = 0
                     //calculate market value and profit/loss
                     marketValue = parseFloat((parseFloat(marketValue) - parseFloat(price*quantity)).toFixed(2))
-                    $('#marketValue').text("Market Value: " + marketValue)
-                    $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
+                    $('#marketValue').text("Market Value: $" + marketValue)
+                    $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
                     cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                    $('#cash').text('Cash: ' + cash)
+                    $('#cash').text('Cash: $' + cash)
                   } else{
                     //update avg price
                     avgPrice[searchSymbol] = parseFloat((totalValueAfter/stocks[searchSymbol]).toFixed(2))
                     //update html
-                    $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
+                    $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    Your Average Purchase Price: $" + avgPrice[searchSymbol] + "    Price: $" + data.delayedPrice + "    Profit/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2))
                     //calculate market value and profit/loss
                     marketValue = parseFloat((parseFloat(marketValue) - parseFloat(price*quantity)).toFixed(2))
                     //update total profit and loss
                     totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
-                    $('#marketValue').text("Market Value: " + marketValue)
-                    $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
+                    $('#marketValue').text("Market Value: $" + marketValue)
+                    $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
                     cash = parseFloat((cash + parseFloat((price*quantity).toFixed(2))).toFixed(2))
-                    $('#cash').text('Cash: ' + cash)
+                    $('#cash').text('Cash: $' + cash)
                   }
                 }
               }
@@ -506,12 +566,12 @@ function display_userlist(userlist) {
       class: 'userlist_entry_username'
     }).appendTo(cur_entry)
     $('<p>', {
-      text: 'Cash: ' + userlist[i].Cash,
+      text: 'Cash: $' + userlist[i].Cash,
       class: 'userlist_entry_cash'
     }).appendTo(cur_entry)
 
     $('<p>', {
-      text: 'Stock Value: ' + userlist[i].Cash,
+      text: 'Stock Value: $' + userlist[i].Cash,
       class: 'userlist_entry_stockValue'
     }).appendTo(cur_entry)
 
@@ -547,9 +607,10 @@ function display_userlist(userlist) {
             var stockValue = 0
             for (var n = 0; n < (userlist[c].Holdings).length; n++) {
               if (Object.keys(prices).includes(userlist[c].Holdings[n])) {
-                stockWorth = parseFloat(parseFloat(parseFloat(userlist[c].StockQuantity[n]) * parseFloat(prices[userlist[c].Holdings[n]]))).toFixed(2)
+                stockValue = parseFloat(parseFloat(parseFloat(userlist[c].StockQuantity[n]) * parseFloat(prices[userlist[c].Holdings[n]]))).toFixed(2)
+                console.log(stockValue)
                 stockWorth = parseFloat(stockWorth) + parseFloat(stockValue)
-                $('#userStockValue' + userlist[c].Username).text("Stock Value: " + stockWorth.toFixed(2))
+                $('#userStockValue' + userlist[c].Username).text("Stock Value: $" + stockWorth.toFixed(2))
               }
             }
           }
