@@ -1,7 +1,7 @@
 #title {
   text-align: center;
-  color: black;
-  font-size: 200%;
+  color: white;
+  font-size: 350%;
 }
 
 button {
@@ -39,6 +39,11 @@ input:focus{
 body {
   border: none;
   background-image: url("background.jpg");
+
+  background-repeat: repeat;
+  background-attachment: scroll;
+  background-size: contain;
+
   display: flex;
   justify-content: center;
   align-items: center;
