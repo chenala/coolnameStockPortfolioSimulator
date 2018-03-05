@@ -555,7 +555,7 @@ function display_userlist(userlist) {
     }).appendTo(cur_entry)
 
     $('<p>', {
-      text: 'Stock Value: $' + userlist[i].Cash,
+      text: 'Stock Value: $' + 0,
       id: 'stock_value' + userlist[i].Username,
       class: 'userlist_entry_stockValue'
     }).appendTo(cur_entry)
