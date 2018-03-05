@@ -1,6 +1,5 @@
 var api = 'https://api.iextrading.com/1.0'
 
-$('#form_container2').hide()
 $('#admin_container').hide()
 $('#user_container').hide()
 $('#searchStock_container').hide()
@@ -249,13 +248,11 @@ $('#Login').click(function(){
           type:'GET',
           url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
           success:function(data){
-            $('#form_container2').show()
             var price = data.delayedPrice
             $('#stockTicker').text(searchSymbol)
             $('#stockCompany').text(symbolCompany[searchSymbol])
             $('#stockPrice').text('Price: ' + data.delayedPrice)
             $('#stockHistory').show()
-
 
           }
         })

@@ -4,6 +4,38 @@
   font-size: 200%;
 }
 
+button {
+  background-color: DarkOrange;
+  border: none;
+  color: white;
+  padding: 7px;
+  margin: 5px;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 20px;
+  outline: none;
+}
+
+button:active {
+  background-color: chocolate
+}
+
+button:hover {
+  background-color: chocolate
+}
+
+input {
+  border-radius: 25px;
+  border: none;
+  padding: 7px;
+  margin: 5px;
+  outline: none;
+}
+input:focus{
+  background-color: MistyRose;
+}
+
 body {
   border: none;
   background-image: url("background.jpg");
@@ -42,7 +74,6 @@ body {
 }
 
 #Login {
-  background-color: #4CAF50;
   border: none;
   color: white;
   padding: 17px;
@@ -55,14 +86,16 @@ body {
   width: 100%;
 }
 
-#user_container {
+#user_container, #admin_container {
   display: flex;
   flex-direction: column;
   padding: 20px;
   border-radius: 25px;
   background-color: DodgerBlue;
 }
-
+#admin_container {
+  width: 80%;
+}
 
 
 
@@ -85,8 +118,17 @@ tr:hover {background-color: #ddd;}
 th {
     padding-top: 12px;
     padding-bottom: 12px;
-    background-color: #4CAF50;
+    background-color: DarkOrange;
     color: white;
+}
+
+#stockTrade_form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+#quantity , #buySymbol {
+  width: 100%;
 }
 
 /*
