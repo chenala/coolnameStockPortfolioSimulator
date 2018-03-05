@@ -573,7 +573,6 @@ function display_userlist(userlist) {
 
   // calculate stock value for each user
   for (var i = 0; i < userlist.length; i++) {
-    var stockWorth = 0
     var prices = {}
 
     for (var m = 0; m < (userlist[i].Holdings).length; m++) {
@@ -589,10 +588,11 @@ function display_userlist(userlist) {
           var stockPrice = data.delayedPrice
           prices[ticker] = stockPrice
           for (var c = 0; c < userlist.length; c++) {
+            var stockWorth = 0
             var stockValue = 0
             for (var n = 0; n < (userlist[c].Holdings).length; n++) {
               if (Object.keys(prices).includes(userlist[c].Holdings[n])) {
-                stockWorth = parseFloat(parseFloat(parseFloat(userlist[c].StockQuantity[n]) * parseFloat(prices[userlist[c].Holdings[n]]))).toFixed(2)
+                stockValue = parseFloat(parseFloat(parseFloat(userlist[c].StockQuantity[n]) * parseFloat(prices[userlist[c].Holdings[n]]))).toFixed(2)
                 stockWorth = parseFloat(stockWorth) + parseFloat(stockValue)
                 $('#stock_value' + userlist[c].Username).text("Stock Value: " + stockWorth.toFixed(2))
               }
