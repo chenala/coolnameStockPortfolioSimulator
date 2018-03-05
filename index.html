@@ -2,59 +2,32 @@
     <head>
         <meta charset="utf-8">
         <title>Coolname Stock Portfolio Simulator</title>
-        <!--
         <link rel="stylesheet" type="text/css" href="index.css">
-      -->
-
     </head>
     <body>
-      <h3>Coolname Stock Portfolio Simulator</h3>
-      <div id="login_container">
+      <div class="form_container">
 
-        <div class="input_1">
-          <label>Username</label>
-          <input id="uname" type="text" placeholder="Enter Username" required>
+        <div id="login_container">
+          <h3>Coolname Stock Portfolio Simulator</h3>
+          <div class="input_1">
+            <label>Username</label>
+            <input id="uname" type="text" placeholder="Enter Username" required>
+          </div>
+          <div class="input_1">
+            <label>Password</label>
+            <input id="pswrd" type="password" placeholder="Enter Password" required>
+          </div>
+          <div class="login">
+            <button id="Login">Login</button>
+          </div>
         </div>
-        <div class="input_1">
-          <label>Password</label>
-          <input id="pswrd" type="password" placeholder="Enter Password" required>
-        </div>
-        <div class="login">
-          <button id="Login">Login</button>
-        </div>
+
+
       </div>
 
-
-
-      <div id="user_container">
-
-        <h4 class="welcome_all" id="welcome_user">Welcome User</h4>
-        <div id='user_standing_div'>
-          <p class='subheader' id='standing_header'>Your current standing:</p>
-        </div>
-
-        <div id="stocklist_container">
-          <ul id='stocklist_list'></ul>
-        </div>
-
-        <div id="stockTrade_form">
-          <h4>Buy/Sell Stock</h4>
-          <div class="label_input_container">
-            <label>Stock </label>
-            <input id="buySymbol" type="text" placeholder="Enter stock symbol">
-          </div>
-          <div class="label_input_container">
-            <label>Quantity </label>
-            <input id="quantity" type="text" placeholder="Enter quantity">
-          </div>
-          <button id="buyButton">Buy</button>
-          <button id="sellButton">Sell</button>
-        </div>
-      </div>
-
-
-      <div id="admin_container">
-        <h4 class="welcome_all" id="welcome_admin">Welcome Admin</h4>
+      <div class="admin_container">
+        <h3>Coolname Stock Portfolio Simulator</h3>
+        <h4 class="welcome_user" id="welcome_admin">Welcome Admin</h4>
 
         <div id="admin_op_div">
           <button id="newUser_button">Add New User</button>
@@ -84,37 +57,11 @@
           <div id=userlist_container>
           </div>
         </div>
-      </div>
 
-
-
-      <div id=searchStock_container>
-        <label>Search Stock </label>
-        <input id="searchSymbol" type="text" placeholder="Enter stock symbol">
-        <button id="searchButton">Search</button>
-      </div>
-
-      <div id=searchStockResults_container>
-        <h1 id="stockTicker"></h1>
-        <h2 id="stockCompany"></h2>
-        <p id="stockPrice"></p>
-
-        <div id="stockHistory">
-          <ul id="histories"></ul>
-          <button class="stockHistory_buttons" id="one_week">1-Week History</button>
-          <button class="stockHistory_buttons" id="six_months">6-Month History</button>
-          <button class="stockHistory_buttons" id="one_year">1-Year History</button>
-          <div id="stockHistoryDetails">
-            <div id="stockHistoryDiv1w"></div>
-            <div id="stockHistoryDiv6m"></div>
-            <div id="stockHistoryDiv1y"></div>
-          </div>
-        </div>
 
       </div>
 
-
-      <div id="form_container2">
+      <div class="form_container2">
       </div>
 
 
