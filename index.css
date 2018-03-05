@@ -1,4 +1,5 @@
 #title {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   text-align: center;
   color: white;
   font-size: 350%;
@@ -135,4 +136,17 @@ th {
 }
 #quantity , #buySymbol {
   width: 100%;
+}
+
+#standing_header {
+  font-weight: bold;
+  text-align: left;
+  color: black;
+}
+
+#welcome_user, #welcome_admin{
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  text-align: center;
+  color: black;
+  font-size: 150%;
 }
