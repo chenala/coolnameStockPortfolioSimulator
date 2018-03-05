@@ -86,17 +86,18 @@ body {
   width: 100%;
 }
 
-#user_container, #admin_container {
+#user_container, #admin_container, #search_stock_all{
   display: flex;
   flex-direction: column;
   padding: 20px;
   border-radius: 25px;
   background-color: DodgerBlue;
-}
-#admin_container {
   width: 80%;
+  margin: 5px;
 }
-
+#search_stock_all {
+  background-color: DarkViolet;
+}
 
 
 table {

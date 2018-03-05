@@ -2,6 +2,7 @@ var api = 'https://api.iextrading.com/1.0'
 
 $('#admin_container').hide()
 $('#user_container').hide()
+$('#search_stock_all').hide()
 $('#searchStock_container').hide()
 $('#searchStockResults_container').hide()
 
@@ -142,6 +143,7 @@ $('#Login').click(function(){
     //if it is a user role
     $('#login_container').hide()
     $('#user_container').show()
+    $('#search_stock_all').show()
     $('#searchStock_container').show()
 
     $('#welcome_user').text('Welcome, ' + username)
