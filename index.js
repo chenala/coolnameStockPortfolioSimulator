@@ -1,13 +1,15 @@
 var api = 'https://api.iextrading.com/1.0'
 
-$('.form_container2').hide()
-$('.admin_container').hide()
+$('#form_container2').hide()
+$('#admin_container').hide()
+$('#user_container').hide()
+$('#searchStock_container').hide()
+$('#searchStockResults_container').hide()
 
 $('#Login').click(function(){
   var username = document.getElementById('uname').value
   if (username === 'admin'){
-    $('.form_container').hide()
-    $('.admin_container').show()
+    $('#admin_container').show()
     $('#login_container').hide()
 
     //The object 'users' holds data about all users on the system
@@ -137,14 +139,15 @@ $('#Login').click(function(){
 
   }
 
+// TODO: MAKE THIS MORE READABLE -> MOVE HTML ELEMENTS TO HTML FILE IF YOU CAN
+// TODO: GO BACK TO ADMIN PART AND MAKE A SEARCH BAR TO FILTER USERS
   else{
     //if it is a user role
     $('#login_container').hide()
+    $('#user_container').show()
+    $('#searchStock_container').show()
 
-    $('<p>').appendTo('.form_container').text("welcome " + username)
-
-    var standing = $('<div>').appendTo('.form_container')
-    $('<p>').appendTo(standing).text('Your current standing:')
+    $('#welcome_user').text('Welcome, ' + username)
 
     //assume user has these stocks and cash
     //stocks store how many stocks of each company the user holds
@@ -159,21 +162,18 @@ $('#Login').click(function(){
     $('<p>', {
       text: 'Cash: ' + cash,
       id: 'cash'
-    }).appendTo(standing)
+    }).appendTo('#user_standing_div')
     $('<p>', {
       id: 'marketValue',
       text: 'marketValue' + 0
-    }).appendTo(standing)
+    }).appendTo('#user_standing_div')
     $('<p>', {
       id: 'totalProfitLoss',
       text: 'Total Profit/Loss' + 0
-    }).appendTo(standing)
+    }).appendTo('#user_standing_div')
+
 
     //display list of stocks
-    var stockList = $('<div>').appendTo('.form_container')
-    var list = $('<ul>', {
-      id: 'stockList'
-    }).appendTo(stockList)
 
     //calculate total equity from stocks that user holds and user's profit/loss
     for (var key in stocks){
@@ -189,27 +189,10 @@ $('#Login').click(function(){
             $('#totalProfitLoss').text('Total Profit/Loss: ' + totalProfitLoss)
             $('<li>', {text: "Stock: " + ticker + "    Quantity: " + stocks[ticker] + "    YourAvgPrice: " + avgPrice[ticker] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     ",
               id: ticker
-            }).appendTo(stockList)
+            }).appendTo('#stocklist_list')
         }
       })
     }
-
-    //buystock button and sell
-    $('<div>', {id: 'buyStock'}).appendTo('.form_container')
-    $('<br>').appendTo('#buyStock')
-    $('<label>', {text: 'Stock '}).appendTo('#buyStock')
-    $('<input>', {id: 'buySymbol', type: 'text', placeholder: 'Enter symbol of the stock you want'}).appendTo('#buyStock')
-    $('<label>', {text: 'Quantity '}).appendTo('#buyStock')
-    $('<input>', {id: 'quantity', type: 'integer', placeholder: 'Enter how many you want'}).appendTo('#buyStock')
-    $('<button>', {text: 'Buy',id: 'buyButton'}).appendTo('#buyStock')
-    $('<button>', {text: 'Sell',id: 'sellButton'}).appendTo('#buyStock')
-
-    //search stocks
-    $('<br>').appendTo('.form_container')
-    $('<div>', {id: 'searchStock'}).appendTo('.form_container')
-    $('<label>', {text: 'Search Stock '}).appendTo('#searchStock')
-    $('<input>', {id: 'searchSymbol', type: 'text', placeholder: 'Enter Stock Symbol'}).appendTo('#searchStock')
-    $('<button>', {text: 'Search',id: 'searchButton'}).appendTo('#searchStock')
 
     var symbols = []
     var symbolCompany = {}
@@ -227,120 +210,110 @@ $('#Login').click(function(){
         $('#searchSymbol').autocomplete({
           source: symbols,
           minLength: 2,
-          appendTo: $('#searchStock')
-        })
-
-        //display stock info
-        // $('<div>', {id: 'stockInfo'}).appendTo('.form_container')
-        $('<h1>', {id: 'stockTicker', text: ''}).appendTo('.form_container2')
-        $('<h2>', {id: 'stockCompany', text: ''}).appendTo('.form_container2')
-        $('<p>', {id: 'stockPrice', text: ''}).appendTo('.form_container2')
-        $('<div>', {id: 'stockHistory'}).appendTo('.form_container2')
-        $('<ul>', {id: 'histories'}).appendTo('#stockHistory')
-        $('<button>', {id: 'one_week', text: '1-Week History'}).appendTo('#stockHistory')
-        $('<button>', {id: 'six_months', text: '6-Month History'}).appendTo('#stockHistory')
-        $('<button>', {id: 'one_year', text: '1-Year History'}).appendTo('#stockHistory')
-
-        $('<div>', {id: 'stockHistoryDetails'}).appendTo('#stockHistory')
-        $('<div>', {id: 'stockHistoryDiv1w'}).appendTo('#stockHistoryDetails')
-        $('<div>', {id: 'stockHistoryDiv6m'}).appendTo('#stockHistoryDetails')
-        $('<div>', {id: 'stockHistoryDiv1y'}).appendTo('#stockHistoryDetails')
-
-        createTable('1w', 7)
-        createTable('6m', 186)
-        createTable('1y', 366)
-
-        $('#stockHistoryDiv1y').hide()
-        $('#stockHistoryDiv6m').hide()
-        $('#stockHistoryDiv1w').hide()
-
-        $('#stockHistory').hide()
-        //get text in search bar
-        $('#searchButton').click(function(){
-          $('#stockHistoryDiv1y').hide()
-          $('#stockHistoryDiv6m').hide()
-          $('#stockHistoryDiv1w').hide()
-          var searchSymbol = document.getElementById('searchSymbol').value
-          searchSymbol = searchSymbol.toUpperCase()
-          if (!symbols.includes(searchSymbol)){
-            window.alert("The symbol doesn't exist")
-          }
-          $.ajax({
-            type:'GET',
-            url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
-            success:function(data){
-              $('.form_container2').show()
-              var price = data.delayedPrice
-              $('#stockTicker').text(searchSymbol)
-              $('#stockCompany').text(symbolCompany[searchSymbol])
-              $('#stockPrice').text('Price: ' + data.delayedPrice)
-              $('#stockHistory').show()
-
-
-            }
-          })
-        })
-
-        $('#one_week').click(function(){
-          var searchSymbol = document.getElementById('searchSymbol').value
-          searchSymbol = searchSymbol.toUpperCase()
-          $('#stockHistoryDiv1y').hide()
-          $('#stockHistoryDiv6m').hide()
-          $('#stockHistoryDiv1w').show()
-          $.ajax({
-            type:'GET',
-            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-            success:function(data){
-              updateTableValues('1w', data, 7, searchSymbol)
-//                    console.log(data)
-            }
-          })
-        })
-
-        $('#six_months').click(function(){
-          var searchSymbol = document.getElementById('searchSymbol').value
-          searchSymbol = searchSymbol.toUpperCase()
-          $('#stockHistoryDiv1w').hide()
-          $('#stockHistoryDiv1y').hide()
-          $('#stockHistoryDiv6m').show()
-          $.ajax({
-            type:'GET',
-            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-            success:function(data){
-//                    console.log(data)
-              updateTableValues('6m', data, 120, searchSymbol)
-            }
-          })
-        })
-
-        $('#one_year').click(function(){
-          var searchSymbol = document.getElementById('searchSymbol').value
-          searchSymbol = searchSymbol.toUpperCase()
-          $('#stockHistoryDiv1w').hide()
-          $('#stockHistoryDiv6m').hide()
-          $('#stockHistoryDiv1y').show()
-          $.ajax({
-            type:'GET',
-            url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
-            success:function(data){
-//                    console.log(data)
-              updateTableValues('1y', data, 253, searchSymbol)
-
-            }
-          })
+          appendTo: $('#searchStock_container')
         })
       }
     })
 
-    //buyStock
+    // create table and updating entries in the table for stock history
+    createTable('1w', 7)
+    createTable('6m', 120)
+    createTable('1y', 200)
+
+    $('#stockHistoryDiv1y').hide()
+    $('#stockHistoryDiv6m').hide()
+    $('#stockHistoryDiv1w').hide()
+
+    $('#stockHistory').hide()
+    //get text in search bar
+    $('#searchButton').click(function(){
+      $('#stockHistoryDiv1y').hide()
+      $('#stockHistoryDiv6m').hide()
+      $('#stockHistoryDiv1w').hide()
+      var searchSymbol = document.getElementById('searchSymbol').value
+      searchSymbol = searchSymbol.toUpperCase()
+      if (!symbols.includes(searchSymbol)){
+        window.alert("The symbol doesn't exist")
+      }
+      else {
+        $('#searchStockResults_container').show()
+        $.ajax({
+          type:'GET',
+          url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
+          success:function(data){
+            $('#form_container2').show()
+            var price = data.delayedPrice
+            $('#stockTicker').text(searchSymbol)
+            $('#stockCompany').text(symbolCompany[searchSymbol])
+            $('#stockPrice').text('Price: ' + data.delayedPrice)
+            $('#stockHistory').show()
+
+
+          }
+        })
+      }
+    })
+
+    $('#one_week').click(function(){
+      var searchSymbol = document.getElementById('searchSymbol').value
+      searchSymbol = searchSymbol.toUpperCase()
+      $('#stockHistoryDiv1y').hide()
+      $('#stockHistoryDiv6m').hide()
+      $('#stockHistoryDiv1w').show()
+      $.ajax({
+        type:'GET',
+        url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+        success:function(data){
+          updateTableValues('1w', data, 7, searchSymbol)
+//                    console.log(data)
+        }
+      })
+    })
+
+    $('#six_months').click(function(){
+      var searchSymbol = document.getElementById('searchSymbol').value
+      searchSymbol = searchSymbol.toUpperCase()
+      $('#stockHistoryDiv1w').hide()
+      $('#stockHistoryDiv1y').hide()
+      $('#stockHistoryDiv6m').show()
+      $.ajax({
+        type:'GET',
+        url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+        success:function(data){
+//                    console.log(data)
+          updateTableValues('6m', data, 120, searchSymbol)
+        }
+      })
+    })
+
+    $('#one_year').click(function(){
+      var searchSymbol = document.getElementById('searchSymbol').value
+      searchSymbol = searchSymbol.toUpperCase()
+      $('#stockHistoryDiv1w').hide()
+      $('#stockHistoryDiv6m').hide()
+      $('#stockHistoryDiv1y').show()
+      $.ajax({
+        type:'GET',
+        url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
+        success:function(data){
+//                    console.log(data)
+          updateTableValues('1y', data, 200, searchSymbol)
+
+        }
+      })
+    })
+////////////////////////////////// end of table update
+
+
+    //buy Stock
     $('#buyButton').click(function(){
       if (confirm("Confirm buy these stocks?")){
         var searchSymbol = document.getElementById('buySymbol').value
         searchSymbol = searchSymbol.toUpperCase()
         //record quantity
         var quantity = document.getElementById('quantity').value
-        if (!isInt(quantity)){
-          window.alert("Quantity is not an integer.")
+        if (!verifyDigitsOnly_regex(quantity)){
+          window.alert("Quantity is not a positive integer.")
         } else {
           $.ajax({
             type:'GET',
@@ -377,7 +350,7 @@ $('#Login').click(function(){
 
                   $('<li>', {text: "Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + data.delayedPrice + "    Profict/Loss: " + (stocks[searchSymbol] * (data.delayedPrice - avgPrice[searchSymbol])).toFixed(2),
                     id: searchSymbol
-                  }).appendTo(stockList)
+                  }).appendTo('#stocklist_list')
 
                   //calculate market value and profit/loss
                   marketValue = parseFloat((parseFloat(marketValue) + parseFloat((price*quantity).toFixed(2))).toFixed(2))
@@ -406,8 +379,8 @@ $('#Login').click(function(){
         searchSymbol = searchSymbol.toUpperCase()
         //record quantity
         var quantity = document.getElementById('quantity').value
-        if (!isInt(quantity)){
-          window.alert("Quantity is not an integer.")
+        if (!verifyDigitsOnly_regex(quantity)){
+          window.alert("Quantity is not a positive integer.")
         } else {
           $.ajax({
             type:'GET',
@@ -508,9 +481,17 @@ function username_exists(username, users) {
 }
 
 function verifyCash_regex(cash){
-  var cash_isValid = /^[0-9]+$/.test(cash);
+  var cash_isValid = /^[0-9]+(\.[0-9][0-9])?$/.test(cash);
   if(!cash_isValid) {
     window.alert('Unable to proceed. Cash value is invalid.')
+    return false
+  }
+  return true
+}
+
+function verifyDigitsOnly_regex(value){
+  var value_isValid = /^[0-9]+$/.test(cash);
+  if(!value_isValid) {
     return false
   }
   return true
