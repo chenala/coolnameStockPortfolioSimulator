@@ -94,11 +94,11 @@ $('#Login').click(function(){
           for (var h = 0; h < users.length; h++) {
             if (recipient === users[h].Username) {
               users[h].Cash = parseFloat(users[h].Cash) + parseFloat(amount)
-              $('#userCash' + recipient).text("Cash: " + users[h].Cash)
             }
           }
           window.alert('Succcess! Amount has been added to the recipient.')
           addCashWindow_isOpen = false
+          display_userlist(users)
           $('#addCash_div').hide()
         }
       }
@@ -139,8 +139,6 @@ $('#Login').click(function(){
 
   }
 
-// TODO: MAKE THIS MORE READABLE -> MOVE HTML ELEMENTS TO HTML FILE IF YOU CAN
-// TODO: GO BACK TO ADMIN PART AND MAKE A SEARCH BAR TO FILTER USERS
   else{
     //if it is a user role
     $('#login_container').hide()
@@ -172,8 +170,6 @@ $('#Login').click(function(){
       text: 'Total Profit/Loss' + 0
     }).appendTo('#user_standing_div')
 
-
-    //display list of stocks
 
     //calculate total equity from stocks that user holds and user's profit/loss
     for (var key in stocks){
@@ -265,7 +261,6 @@ $('#Login').click(function(){
         url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
         success:function(data){
           updateTableValues('1w', data, 7, searchSymbol)
-//                    console.log(data)
         }
       })
     })
@@ -280,7 +275,6 @@ $('#Login').click(function(){
         type:'GET',
         url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
         success:function(data){
-//                    console.log(data)
           updateTableValues('6m', data, 120, searchSymbol)
         }
       })
@@ -296,13 +290,10 @@ $('#Login').click(function(){
         type:'GET',
         url: api.concat('/stock/' + searchSymbol + '/chart/1y'),
         success:function(data){
-//                    console.log(data)
           updateTableValues('1y', data, 200, searchSymbol)
-
         }
       })
     })
-////////////////////////////////// end of table update
 
 
     //buy Stock
@@ -512,6 +503,7 @@ function display_userlist(userlist) {
 
     $('<p>', {
       text: 'Stock Value: ' + userlist[i].Cash,
+      id: 'stock_value' + userlist[i].Username,
       class: 'userlist_entry_stockValue'
     }).appendTo(cur_entry)
 
@@ -549,7 +541,7 @@ function display_userlist(userlist) {
               if (Object.keys(prices).includes(userlist[c].Holdings[n])) {
                 stockWorth = parseFloat(parseFloat(parseFloat(userlist[c].StockQuantity[n]) * parseFloat(prices[userlist[c].Holdings[n]]))).toFixed(2)
                 stockWorth = parseFloat(stockWorth) + parseFloat(stockValue)
-                $('#userStockValue' + userlist[c].Username).text("Stock Value: " + stockWorth.toFixed(2))
+                $('#stock_value' + userlist[c].Username).text("Stock Value: " + stockWorth.toFixed(2))
               }
             }
           }
