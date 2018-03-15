@@ -1,0 +1,23 @@
+{
+  "name": "coolname-stock-portfolio-simulator",
+  "version": "1.0.0",
+  "description": "CSC309 Project",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csc309-18s/assignment-3-coolname.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/csc309-18s/assignment-3-coolname/issues"
+  },
+  "homepage": "https://github.com/csc309-18s/assignment-3-coolname#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongodb": "^3.0.4"
+  }
+}
