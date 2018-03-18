@@ -9,30 +9,18 @@ MongoClient.connect(url, function(err,res){
 	// Add functions here
 
   //data to be inserted
-  //this below is inserted
-  //var data = {user:"asdf", password:"123456", stocks:[{symbol: "AAPL", quantity: 1, avgPrice: 100}, {symbol:"FB", quantity: 1, avgPrice: 100}]}
-
-
+  //var data = {user:"user2", password:"123456", cash: 1000, stocks:[{symbol: "AAPL", quantity: 1, avgPrice: 100}, {symbol:"FB", quantity: 1, avgPrice: 100}]}
   //insert one entry into database
   // db.collection("coolname-stocks").insertOne(data, function(err, res){
   //   console.log("INSERT ONE")
-  //
-  //   check all data in database
-  //   db.collection('coolname-stocks').find({}).forEach(function(doc) {
-  //     console.log(doc)
-  //   }, (err) => {
-  //     console.log(err);
-  //   })
-  //
-  //
   // })
 
   //   check all data in database
-    db.collection('coolname-stocks').find({}).forEach(function(doc) {
-      console.log(doc)
-    }, (err) => {
-      console.log(err);
-    })
+  db.collection('coolname-stocks').find({}).forEach(function(doc) {
+    console.log(doc)
+  }, (err) => {
+    console.log(err);
+  })
 
 
   // //check specific entry in Database
@@ -44,6 +32,8 @@ MongoClient.connect(url, function(err,res){
 
   //delete all entry in Database
   //db. collection('coolname-stocks').deleteMany({})
+
+	//update an entry
 
 
 })
