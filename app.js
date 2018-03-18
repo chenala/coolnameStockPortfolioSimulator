@@ -6,6 +6,8 @@ const url = "mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db"
 
 app.use(bodyParser.json())
 
+app.use(express.static(__dirname + '/'))
+
 //handle CORS problem
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', req.headers.origin || "*");
@@ -21,17 +23,25 @@ MongoClient.connect(url, function(err,res){
   console.log("Database created");
   const db = res.db('csc309db')
 
-  //test
-  app.get('/hello', function(req, res){
-    res.send("Hello World")
+  //homepage
+  app.get('/', function(req, res){
+    res.sendFile(__dirname + '/index.html')
   })
 
   //based on userId, retrieve information of this user from database
-  app.get('/login/:userId', function(req, res){
-    console.log("userId trying to login: " + req.params.userId)
-    db.collection('coolname-stocks').findOne({user: req.params.userId}).then(function(document){
+  //format of input {"user": "", "password": ""}
+  app.post('/login', function(req, res){
+    var input = req.body
+    db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
       if (document){
-        res.send(document)
+        if (input.password != document.password){
+          res.send("Password Incorrect")
+        } else{
+          var returnValue = {}
+          res.send(document)
+        }
+      } else{
+        res.send("User doesn't exist")
       }
     })
   })
