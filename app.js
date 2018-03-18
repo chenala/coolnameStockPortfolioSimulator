@@ -62,11 +62,10 @@ MongoClient.connect(url, function(err,res){
             stocks[index].avgPrice = parseFloat((totalValueAfter/stocks[index].quantity).toFixed(2))
           } else{
             var newStock = {"symbol": input.stock, "quantity": input.quantity, "avgPrice": input.price}
-            cash = parseFloat((document.cash - parseFloat((input.price*input.quantity).toFixed(2))).toFixed(2))
             stocks.push(newStock)
             index = stocks.length - 1
           }
-          cash = parseFloat((document.cash - parseFloat((input.price*input.quantity).toFixed(2))).toFixed(2))
+          var cash = parseFloat((document.cash - parseFloat((input.price*input.quantity).toFixed(2))).toFixed(2))
           db.collection("coolname-stocks").updateOne(
             {user: input.user},
             {$set: {"stocks": stocks}}
@@ -87,6 +86,67 @@ MongoClient.connect(url, function(err,res){
           res.send(returnValue)
         }
 
+      } else{ //if the user doesn't exists
+        res.send("User doesn't exists!")
+      }
+    })
+
+  })
+
+
+  //sell stock for a user
+  //format of post: {"user": "", "stock": "", quantity: "", price:""}
+  //return value is quantity of the stock after selling, avgPrice after selling,
+  //and cash after selling
+  app.post('/sell', function(req, res){
+    var input = req.body
+    console.log(input)
+    //check the user in database
+    db.collection("coolname-stocks").findOne({user: input.user}).then(function(document){
+      if (document){
+        var stocks = document.stocks
+        var index = containsStock(input.stock, stocks)
+        if (index != -1){
+          if (input.quantity > stocks[index].quantity){
+            res.send("Can't Sell More Than You Have")
+          } else{
+            var quantityAfter
+            var avgPriceAfter
+            var totalValueBefore = stocks[index].avgPrice * stocks[index].quantity
+            var totalValueAfter = totalValueBefore - input.price * input.quantity
+            var cash = parseFloat((document.cash + parseFloat((input.price * input.quantity).toFixed(2))).toFixed(2))
+            stocks[index].quantity = parseInt(stocks[index].quantity) - parseInt(input.quantity)
+            quantityAfter = stocks[index].quantity
+            if (stocks[index].quantity == 0){
+              stocks.splice(index, 1)
+              avgPriceAfter = 0
+            } else{
+              stocks[index].avgPrice = parseFloat((totalValueAfter/stocks[index].quantity).toFixed(2))
+              avgPriceAfter = stocks[index].avgPrice
+            }
+            //update database
+            db.collection("coolname-stocks").updateOne(
+              {user: input.user},
+              {$set: {"stocks": stocks}}
+            ).then(function(document){
+              if (!document){
+                res.send("Update stock quantity and avgPrice fail!")
+              }
+            })
+            db.collection("coolname-stocks").updateOne(
+              {user: input.user},
+              {$set: {"cash": cash}}
+            ).then(function(document){
+              if (!document){
+                res.send("Update cash fail!")
+              }
+            })
+            var returnValue = {"quantity": quantityAfter, "avgPrice": avgPriceAfter, "cash": cash}
+            res.send(returnValue)
+          }
+        } else {
+          res.send("Stock Doesn't Exist")
+        }
       } else{ //if the user doesn't exists
         res.send("User doesn't exists!")
       }

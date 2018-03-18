@@ -368,6 +368,8 @@ $('#buyButton').click(function(){
                   window.alert("You don't have enough cash to by this many.")
                 } else {
                   if (Object.keys(avgPrice).includes(searchSymbol) && stocks[searchSymbol] != 0){
+                    //update total profit and loss to add new value after update
+                    totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(price) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
                     stocks[searchSymbol] = parseInt(data.quantity)
                     avgPrice[searchSymbol] = parseFloat(data.avgPrice)
                     cash = parseInt(data.cash)
