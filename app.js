@@ -6,6 +6,7 @@ const url = "mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db"
 
 app.use(bodyParser.json())
 
+//handle CORS problem
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', req.headers.origin || "*");
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,HEAD,DELETE,OPTIONS');
