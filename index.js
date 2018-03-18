@@ -26,11 +26,21 @@ var symbolCompany
 var prev
 
 
+var username = ''
 
-
+var req = '{"user": "123", "stock": "AA", "price": 1}'
+$.ajax({
+  type: 'POST',
+  url: 'http://localhost:3000/buy',
+  data: req,
+  contentType: 'application/json',
+  success: function(data){
+      console.log(data)
+  }
+})
 
 $('#Login').click(function(){
-  var username = document.getElementById('uname').value
+  username = document.getElementById('uname').value
   if (username === 'admin'){
     $('#admin_container').show()
     $('#login_container').hide()
@@ -358,6 +368,15 @@ $('#buyButton').click(function(){
         url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
         success:function(data){
           var price = data.delayedPrice
+          var req = {"user": username, "stock": searchSymbol, "price": price}
+          $.ajax({
+            type: 'POST',
+            url: 'http://localhost:3000/buy',
+            data: req,
+            success: function(data){
+                console.log(data)
+            }
+          })
           if ((quantity * price) > cash){
             window.alert("You don't have enough cash to by this many.")
           } else{

@@ -6,7 +6,16 @@ const url = "mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db"
 
 app.use(bodyParser.json())
 
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || "*");
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,HEAD,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'content-Type,x-requested-with');
+  res.header('Access-Control-Allow-Headers', 'Content-Type')
+  next();
+});
+
 MongoClient.connect(url, function(err,res){
+
   if(err) console.log(err)
   console.log("Database created");
   const db = res.db('csc309db')
@@ -33,7 +42,6 @@ MongoClient.connect(url, function(err,res){
   app.post('/buy', function(req, res){
     var input = req.body
     console.log(input)
-
     //check the user in database
     db.collection("coolname-stocks").findOne({user: input.user}).then(function(document){
       if (document){
