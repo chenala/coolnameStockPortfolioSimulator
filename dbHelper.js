@@ -34,6 +34,13 @@ MongoClient.connect(url, function(err,res){
   //db. collection('coolname-stocks').deleteMany({})
 
 	//update an entry
-
+	// db.collection("coolname-stocks").updateOne(
+	// 	{user: "user2"},
+	// 	{$set: {"cash": 200000}}
+	// ).then(function(document){
+	// 	if (!document){
+	// 		res.send("Update cash fail!")
+	// 	}
+	// })
 
 })
