@@ -7,10 +7,16 @@ $('#searchStock_container').hide()
 $('#searchStockResults_container').hide()
 $('#register_div').hide()
 
+// Admin operations forms
+$('#addCash_div').hide()
+$('#deleteUser_div').hide()
+
 // admin var
 var users
-var newUserWindow_isOpen = false;
 var addCashWindow_isOpen = false;
+var deleteUserWindow_isOpen = false;
+
+var newUserWindow_isOpen = false;
 
 // this will contain the information about the user's stocks
 // buy/sell var
@@ -133,10 +139,6 @@ $('#Login').click(function(){
     $('#welcome_admin').text('Welcome, ' + username)
 
     display_userlist(users)
-
-
-    // Admin operations
-    $('#addCash_div').hide()
 
   }
 
@@ -271,6 +273,10 @@ $('.logout_class').click(function(){
   $('#searchStockResults_container').hide()
   $('#search_stock_all').hide()
   $('#login_container').show()
+
+  $('#addCash_div').hide()
+  $('#deleteUser_div').hide()
+
 })
 
 
@@ -287,18 +293,51 @@ $('#newUser_button').click(function(){
 })
 
 // add cash to existing user
+$('#deleteUser_button').click(function(){
+  if(addCashWindow_isOpen) {
+    window.alert('Please finish or cancel your current request first.')
+  }
+  else if(!deleteUserWindow_isOpen) {
+    deleteUserWindow_isOpen = true;
+    $('#deleteUser_div').show()
+    resetDeleteUserFields()
+  }
+})
+
+$('#deleteUser_submit').click(function(){
+  var del_username = document.getElementById('deleteUsername_input').value
+  if(verifyFieldsNotEmpty(1, [del_username])) {
+    if(verifyUsername_regex(del_username)) {
+      if(!username_exists(del_username, users)) {
+          window.alert('Unable to proceed. This username does not exist.')
+      }
+      else {
+        // TODO: delete user from database
+
+        display_userlist(users)
+        window.alert('Success! The following user has been deleted: ' + del_username)
+        // close form
+        deleteUserWindow_isOpen = false
+        display_userlist(users)
+        $('#deleteUser_div').hide()
+      }
+    }
+  }
+})
+
+$('#deleteUser_cancel').click(function() {
+  // close form and reset all fields
+  deleteUserWindow_isOpen = false
+  $('#deleteUser_div').hide()
+  resetDeleteUserFields()
+})
+
+// add cash to existing user
 $('#addCash_button').click(function(){
-/*
-  if(newUserWindow_isOpen) {
+  if(deleteUserWindow_isOpen) {
     window.alert('Please finish or cancel your current request first.')
   }
   else if(!addCashWindow_isOpen) {
-    addCashWindow_isOpen = true;
-    $('#addCash_div').show()
-    resetAddCashFields()
-  }
-*/
-  if(!addCashWindow_isOpen) {
     addCashWindow_isOpen = true;
     $('#addCash_div').show()
     resetAddCashFields()
@@ -343,15 +382,12 @@ $('#newUser_submit').click(function() {
 
   if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
     if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
-    else if(verifyUsername_regex(new_username, users) && verifyCash_regex(new_cash)) {
-      /*
+    else if(verifyUsername_regex(new_username) && verifyCash_regex(new_cash)) {
       if(username_exists(new_username, users)) {
           window.alert('Unable to proceed. This username already exists.')
       }
-      */
       // ^^ TODO: check if username already exists
-      if(true){
-      //else {
+      else {
         // create new user
         var new_user = {
           'Username': new_username,
@@ -359,9 +395,9 @@ $('#newUser_submit').click(function() {
           'Holdings': [],
           'StockQuantity': []
         }
-  //      users.push(new_user)
+        users.push(new_user)
 
-  //      display_userlist(users)
+        display_userlist(users)
         window.alert('Success! User has been created. The username is: ' + new_username)
         // close newUser form
         newUserWindow_isOpen = false
@@ -660,6 +696,11 @@ function resetAddCashFields() {
   document.getElementById('addCashValue_input').value = ''
   document.getElementById('addCashUser_input').value = ''
 }
+
+function resetDeleteUserFields() {
+  document.getElementById('deleteUsername_input').value = ''
+}
+
 
 function verifyUsername_regex(username) {
   var username_isValid = /^\w+$/.test(username);
