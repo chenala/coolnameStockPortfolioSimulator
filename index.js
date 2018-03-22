@@ -5,6 +5,7 @@ $('#user_container').hide()
 $('#search_stock_all').hide()
 $('#searchStock_container').hide()
 $('#searchStockResults_container').hide()
+$('#register_div').hide()
 
 // admin var
 var users
@@ -63,7 +64,6 @@ $('#Login').click(function(){
 
     // Admin operations
     $('#addCash_div').hide()
-    $('#newUser_div').hide()
 
   }
 
@@ -200,22 +200,27 @@ $('.logout_class').click(function(){
 
 // add new user operation
 $('#newUser_button').click(function(){
-  if(addCashWindow_isOpen) {
-    window.alert('Please finish or cancel your current request first.')
-  }
-  else if(!newUserWindow_isOpen) {
+  if(!newUserWindow_isOpen) {
     resetNewUserFields()
     newUserWindow_isOpen = true;
-    $('#newUser_div').show()
+    $('#register_div').show()
+    $('#login_container').hide()
   }
 })
 
 // add cash to existing user
 $('#addCash_button').click(function(){
+/*
   if(newUserWindow_isOpen) {
     window.alert('Please finish or cancel your current request first.')
   }
   else if(!addCashWindow_isOpen) {
+    addCashWindow_isOpen = true;
+    $('#addCash_div').show()
+    resetAddCashFields()
+  }
+*/
+  if(!addCashWindow_isOpen) {
     addCashWindow_isOpen = true;
     $('#addCash_div').show()
     resetAddCashFields()
@@ -261,10 +266,14 @@ $('#newUser_submit').click(function() {
   if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
     if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
     else if(verifyUsername_regex(new_username, users) && verifyCash_regex(new_cash)) {
+      /*
       if(username_exists(new_username, users)) {
           window.alert('Unable to proceed. This username already exists.')
       }
-      else {
+      */
+      // ^^ TODO: check if username already exists
+      if(true){
+      //else {
         // create new user
         var new_user = {
           'Username': new_username,
@@ -272,13 +281,14 @@ $('#newUser_submit').click(function() {
           'Holdings': [],
           'StockQuantity': []
         }
-        users.push(new_user)
+  //      users.push(new_user)
 
-        display_userlist(users)
+  //      display_userlist(users)
         window.alert('Success! User has been created. The username is: ' + new_username)
         // close newUser form
         newUserWindow_isOpen = false
-        $('#newUser_div').hide()
+        $('#register_div').hide()
+        $('#login_container').show()
       }
     }
   }
@@ -287,7 +297,8 @@ $('#newUser_submit').click(function() {
 $('#newUser_cancel').click(function() {
   // close newUser form and reset all fields
   newUserWindow_isOpen = false
-  $('#newUser_div').hide()
+  $('#register_div').hide()
+  $('#login_container').show()
   resetNewUserFields()
 })
 

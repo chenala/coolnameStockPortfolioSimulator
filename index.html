@@ -12,19 +12,40 @@
 
 
       <div id="login_container">
+        <div id=login_div>
+          <div class="input_1">
+            <input id="uname" type="text" placeholder="Enter Username" required>
+          </div>
+          <div class="input_1">
+            <input id="pswrd" type="password" placeholder="Enter Password" required>
+          </div>
 
-        <div class="input_1">
-          <input id="uname" type="text" placeholder="Enter Username" required>
-        </div>
-        <div class="input_1">
-          <input id="pswrd" type="password" placeholder="Enter Password" required>
-        </div>
-
-        <div id="login_button_div">
-          <button id="Login">Log In</button>
+          <div id="login_button_div">
+            <button id="Login">Log In</button>
+          </div>
+          <button id="newUser_button">Create an account</button>
         </div>
       </div>
 
+      <div id="register_div">
+        <div id="newUser_div">
+          <h3 id="create_acc_title">Create a new account</h3>
+            <div class="input_1">
+              <input id="newUsername_input"  type="text" placeholder="Enter new username" required>
+            </div>
+            <div class="input_1">
+              <input id="newPassword_input1" class="input_2" type="text" placeholder="Enter new password" required>
+            </div>
+            <div class="input_1">
+              <input id="newPassword_input2" class="input_2" type="text" placeholder="Re-enter password" required>
+            </div>
+            <div class="input_1" >
+              <input id="newCash_input" class="input_2" type="text" placeholder="Enter cash amount" required>
+            </div>
+          <button id="newUser_submit">Create account</button>
+          <button id="newUser_cancel">Cancel</button>
+        </div>
+      </div>
 
 
       <div id="user_container">
@@ -62,9 +83,14 @@
         <h4 class="welcome_all" id="welcome_admin">Welcome Admin</h4>
         <button class="logout_class" id="logout_admin">Logout</button>
         <div id="admin_op_div">
+
+<!--
           <button id="newUser_button">Add New User</button>
+-->
+
           <button id="addCash_button">Give Cash to Existing User</button>
 
+<!--
           <div id="newUser_div">
             <h3>Create New User</h3>
             <input id="newUsername_input" type="text" placeholder="Enter new username" required>
@@ -74,7 +100,7 @@
             <button id="newUser_submit">Create User</button>
             <button id="newUser_cancel">Cancel</button>
           </div>
-
+-->
           <div id="addCash_div">
             <h3>Give Cash to User</h3>
             <input id="addCashUser_input" type="text" placeholder="Username of Recipient" required>
