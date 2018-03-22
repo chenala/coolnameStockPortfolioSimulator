@@ -29,6 +29,79 @@ var prev
 
 var username = ''
 
+if (sessionStorage.login == "user"){
+  $('#login_container').hide()
+  $('#user_container').show()
+  $('#search_stock_all').show()
+  $('#searchStock_container').show()
+
+  $('#welcome_user').text('Welcome, ' + sessionStorage.username)
+
+  userStockInfoList = []
+
+  stocks = $.parseJSON(sessionStorage.stocks)
+  avgPrice = $.parseJSON(sessionStorage.avgPrice)
+
+  marketValue = 0
+  totalProfitLoss = 0
+
+  displayUserStanding(sessionStorage.cash, marketValue, totalProfitLoss)
+
+  //calculate total equity from stocks that user holds and user's profit/loss
+  for (var key in stocks){
+    var url = api.concat('/stock/' + key + '/delayed-quote')
+    $.ajax({
+      type:'GET',
+      url: url,
+      success:function(data){
+          var ticker = data.symbol
+          marketValue = parseFloat((parseFloat(marketValue) + parseFloat(parseFloat(stocks[ticker]) * parseFloat(data.delayedPrice))).toFixed(2))
+          $('#marketValue').text("Market Value: $" + marketValue)
+          totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[ticker]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[ticker]))).toFixed(2))
+          $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
+
+          // create an userStockInfo element
+          var userStockInfo = {'stock': ticker, 'quantity': stocks[ticker], 'yourAvgPrice': avgPrice[ticker], 'price': data.delayedPrice, 'profit': (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     "}
+          userStockInfoList.push(userStockInfo)
+          createUserStockTable(userStockInfoList)
+      }
+    })
+  }
+
+
+  symbols = []
+  symbolCompany = {}
+  prev = 0;
+  $.ajax({
+    type:'GET',
+    url: api.concat('/ref-data/symbols'),
+    success:function(data){
+      //store all tickers in array symbol
+      data.forEach(function(item){
+        symbols.push(item.symbol)
+        symbolCompany[item.symbol] = item.name
+      })
+      //autocomplete dropdown
+      $('#searchSymbol').autocomplete({
+        source: symbols,
+        minLength: 2,
+        appendTo: $('#searchStock_container')
+      })
+    }
+  })
+
+  // create table and updating entries in the table for stock history
+  createHistoryTable('1w', 7)
+  createHistoryTable('6m', 120)
+  createHistoryTable('1y', 200)
+
+  $('#stockHistoryDiv1y').hide()
+  $('#stockHistoryDiv6m').hide()
+  $('#stockHistoryDiv1w').hide()
+
+  $('#stockHistory').hide()
+}
+
 $('#Login').click(function(){
   username = document.getElementById('uname').value
   password = document.getElementById('pswrd').value
@@ -82,6 +155,7 @@ $('#Login').click(function(){
           window.alert(data)
         } else{
           sessionStorage.login = "user"
+          sessionStorage.username = username
           $('#login_container').hide()
           $('#user_container').show()
           $('#search_stock_all').show()
@@ -92,20 +166,24 @@ $('#Login').click(function(){
           userStockInfoList = []
 
           //update cash value user has
-          cash = data.cash
+          sessionStorage.cash = data.cash
           //get stocks user has
-          var stockList = data.stocks
+          stockList = data.stocks
           stocks = {}
           avgPrice = {}
+          console.log(stockList[0].quantity)
           for (var i = 0; i < stockList.length; i++){
             stocks[stockList[i].symbol] = stockList[i].quantity
             avgPrice[stockList[i].symbol] = stockList[i].avgPrice
           }
 
+          sessionStorage.stocks = JSON.stringify(stocks)
+          sessionStorage.avgPrice = JSON.stringify(avgPrice)
+
           marketValue = 0
           totalProfitLoss = 0
 
-          displayUserStanding(cash, marketValue, totalProfitLoss)
+          displayUserStanding(sessionStorage.cash, marketValue, totalProfitLoss)
 
           //calculate total equity from stocks that user holds and user's profit/loss
           for (var key in stocks){
@@ -390,7 +468,7 @@ $('#buyButton').click(function(){
         url: api.concat('/stock/' + searchSymbol + '/delayed-quote'),
         success:function(data){
           var price = data.delayedPrice
-          var req = '{"user": "'+ username + '", "stock": "' + searchSymbol + '", "quantity": ' + quantity + ', "price": ' + price + '}'
+          var req = '{"user": "'+ sessionStorage.username + '", "stock": "' + searchSymbol + '", "quantity": ' + quantity + ', "price": ' + price + '}'
           $.ajax({
             type: 'POST',
             url: 'http://localhost:3000/buy',
@@ -405,7 +483,9 @@ $('#buyButton').click(function(){
                     totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) - parseFloat(stocks[searchSymbol]) * (parseFloat(price) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
                     stocks[searchSymbol] = parseInt(data.quantity)
                     avgPrice[searchSymbol] = parseFloat(data.avgPrice)
-                    cash = parseInt(data.cash)
+                    sessionStorage.stocks = JSON.stringify(stocks)
+                    sessionStorage.avgPrice = JSON.stringify(avgPrice)
+                    sessionStorage.cash = parseInt(data.cash)
                     //update html
                     $('#' + searchSymbol).text("Stock: " + searchSymbol + "    Quantity: " + stocks[searchSymbol] + "    YourAvgPrice: " + avgPrice[searchSymbol] + "    Price: " + price + "    Profict/Loss: " + (stocks[searchSymbol] * (price - avgPrice[searchSymbol])).toFixed(2))
 
@@ -425,11 +505,13 @@ $('#buyButton').click(function(){
                     totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(price) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
                     $('#marketValue').text("Market Value: $" + marketValue)
                     $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
-                    $('#cash').text('Cash: $' + cash)
+                    $('#cash').text('Cash: $' + sessionStorage.cash)
                   } else {
                     //the user bought a new stock
                     stocks[searchSymbol] = parseInt(data.quantity)
                     avgPrice[searchSymbol] = parseFloat(data.avgPrice)
+                    sessionStorage.stocks = JSON.stringify(stocks)
+                    sessionStorage.avgPrice = JSON.stringify(avgPrice)
                     // create an userStockInfo element
                     var userStockInfo = {'stock': searchSymbol, 'quantity': stocks[searchSymbol], 'yourAvgPrice': avgPrice[searchSymbol], 'price': price, 'profit': (stocks[searchSymbol] * (price - avgPrice[searchSymbol])).toFixed(2)}
                     userStockInfoList.push(userStockInfo)
@@ -442,7 +524,7 @@ $('#buyButton').click(function(){
                     totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[searchSymbol]) * (parseFloat(price) - parseFloat(avgPrice[searchSymbol]))).toFixed(2))
                     $('#marketValue').text("Market Value: $" + marketValue)
                     $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
-                    cash = parseFloat(data.cash)
+                    sessionStorage.cash = parseFloat(data.cash)
                     $('#cash').text('Cash: $' + cash)
                   }
                 }
