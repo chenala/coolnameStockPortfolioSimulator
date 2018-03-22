@@ -37,6 +37,7 @@ var username = ''
 
 $('#Login').click(function(){
   username = document.getElementById('uname').value
+  password = document.getElementById('pswrd').value
   if (username === 'admin'){
     $('#admin_container').show()
     $('#login_container').hide()
@@ -70,82 +71,100 @@ $('#Login').click(function(){
 
   else{
     //if it is a user role
-    $('#login_container').hide()
-    $('#user_container').show()
-    $('#search_stock_all').show()
-    $('#searchStock_container').show()
-
-    $('#welcome_user').text('Welcome, ' + username)
-
-    userStockInfoList = []
-
-    //assume user has these stocks and cash
-    //stocks store how many stocks of each company the user holds
-    stocks = {'AAPL': 1, 'FB': 1}
-    //avg price holds the avg price of the stock the user bought
-    avgPrice = {'AAPL': 100, 'FB': 100}
-    cash = 1000
-    marketValue = 0
-    totalProfitLoss = 0
-
-    displayUserStanding(cash, marketValue, totalProfitLoss)
-
-
-
-
-    //calculate total equity from stocks that user holds and user's profit/loss
-    for (var key in stocks){
-      var url = api.concat('/stock/' + key + '/delayed-quote')
-      $.ajax({
-        type:'GET',
-        url: url,
-        success:function(data){
-            var ticker = data.symbol
-            marketValue = parseFloat((parseFloat(marketValue) + parseFloat(parseFloat(stocks[ticker]) * parseFloat(data.delayedPrice))).toFixed(2))
-            $('#marketValue').text("Market Value: $" + marketValue)
-            totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[ticker]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[ticker]))).toFixed(2))
-            $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
-
-            // create an userStockInfo element
-            var userStockInfo = {'stock': ticker, 'quantity': stocks[ticker], 'yourAvgPrice': avgPrice[ticker], 'price': data.delayedPrice, 'profit': (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     "}
-            userStockInfoList.push(userStockInfo)
-            createUserStockTable(userStockInfoList)
-        }
-      })
-    }
-
-
-    symbols = []
-    symbolCompany = {}
-    prev = 0;
+    var req = '{"user": "' + username + '", "password": "' + password + '"}'
     $.ajax({
-      type:'GET',
-      url: api.concat('/ref-data/symbols'),
-      success:function(data){
-        //store all tickers in array symbol
-        data.forEach(function(item){
-          symbols.push(item.symbol)
-          symbolCompany[item.symbol] = item.name
-        })
-        //autocomplete dropdown
-        $('#searchSymbol').autocomplete({
-          source: symbols,
-          minLength: 2,
-          appendTo: $('#searchStock_container')
-        })
+      type: 'POST',
+      url: 'http://localhost:3000/login',
+      data: req,
+      contentType: 'application/json',
+      success: function(data){
+        if (data == "User doesn't exist"){
+          window.alert(data)
+        } else if (data == "Password Incorrect"){
+          window.alert(data)
+        } else{
+          sessionStorage.login = "user"
+          $('#login_container').hide()
+          $('#user_container').show()
+          $('#search_stock_all').show()
+          $('#searchStock_container').show()
+
+          $('#welcome_user').text('Welcome, ' + username)
+
+          userStockInfoList = []
+
+          //update cash value user has
+          cash = data.cash
+          //get stocks user has
+          var stockList = data.stocks
+          stocks = {}
+          avgPrice = {}
+          for (var i = 0; i < stockList.length; i++){
+            stocks[stockList[i].symbol] = stockList[i].quantity
+            avgPrice[stockList[i].symbol] = stockList[i].avgPrice
+          }
+
+          marketValue = 0
+          totalProfitLoss = 0
+
+          displayUserStanding(cash, marketValue, totalProfitLoss)
+
+          //calculate total equity from stocks that user holds and user's profit/loss
+          for (var key in stocks){
+            var url = api.concat('/stock/' + key + '/delayed-quote')
+            $.ajax({
+              type:'GET',
+              url: url,
+              success:function(data){
+                  var ticker = data.symbol
+                  marketValue = parseFloat((parseFloat(marketValue) + parseFloat(parseFloat(stocks[ticker]) * parseFloat(data.delayedPrice))).toFixed(2))
+                  $('#marketValue').text("Market Value: $" + marketValue)
+                  totalProfitLoss = parseFloat((parseFloat(totalProfitLoss) + parseFloat(stocks[ticker]) * (parseFloat(data.delayedPrice) - parseFloat(avgPrice[ticker]))).toFixed(2))
+                  $('#totalProfitLoss').text('Total Profit/Loss: $' + totalProfitLoss)
+
+                  // create an userStockInfo element
+                  var userStockInfo = {'stock': ticker, 'quantity': stocks[ticker], 'yourAvgPrice': avgPrice[ticker], 'price': data.delayedPrice, 'profit': (stocks[ticker] * (data.delayedPrice - avgPrice[ticker])).toFixed(2) + "     "}
+                  userStockInfoList.push(userStockInfo)
+                  createUserStockTable(userStockInfoList)
+              }
+            })
+          }
+
+
+          symbols = []
+          symbolCompany = {}
+          prev = 0;
+          $.ajax({
+            type:'GET',
+            url: api.concat('/ref-data/symbols'),
+            success:function(data){
+              //store all tickers in array symbol
+              data.forEach(function(item){
+                symbols.push(item.symbol)
+                symbolCompany[item.symbol] = item.name
+              })
+              //autocomplete dropdown
+              $('#searchSymbol').autocomplete({
+                source: symbols,
+                minLength: 2,
+                appendTo: $('#searchStock_container')
+              })
+            }
+          })
+
+          // create table and updating entries in the table for stock history
+          createHistoryTable('1w', 7)
+          createHistoryTable('6m', 120)
+          createHistoryTable('1y', 200)
+
+          $('#stockHistoryDiv1y').hide()
+          $('#stockHistoryDiv6m').hide()
+          $('#stockHistoryDiv1w').hide()
+
+          $('#stockHistory').hide()
+        }
       }
     })
-
-    // create table and updating entries in the table for stock history
-    createHistoryTable('1w', 7)
-    createHistoryTable('6m', 120)
-    createHistoryTable('1y', 200)
-
-    $('#stockHistoryDiv1y').hide()
-    $('#stockHistoryDiv6m').hide()
-    $('#stockHistoryDiv1w').hide()
-
-    $('#stockHistory').hide()
 
   }//end of else
 })
@@ -166,6 +185,9 @@ $('.logout_class').click(function(){
   resetNewUserFields()
   //clear giveCash inputs
   resetAddCashFields()
+
+  //clear session
+  sessionStorage.clear()
 
   $('#admin_container').hide()
   $('#user_container').hide()
