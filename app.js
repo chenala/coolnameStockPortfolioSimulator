@@ -37,8 +37,8 @@ MongoClient.connect(url, function(err,res){
         if (input.password != document.password){
           res.send("Password Incorrect")
         } else{
-          var returnValue = {}
-          res.send(document)
+          var returnValue = {'cash': document.cash, 'stocks': document.stocks}
+          res.send(returnValue)
         }
       } else{
         res.send("User doesn't exist")
