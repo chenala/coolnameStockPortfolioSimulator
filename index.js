@@ -117,7 +117,7 @@ $('#Login').click(function(){
   if (username === 'admin'){
     $('#admin_container').show()
     $('#login_container').hide()
-
+/*
     //The object 'users' holds data about all users on the system
     var user1 = {
       'Username': 'User1',
@@ -138,10 +138,21 @@ $('#Login').click(function(){
       'StockQuantity': [2]
     }
     users = [user1, user2, user3]
-
+*/
     $('#welcome_admin').text('Welcome, ' + username)
 
-    display_userlist(users)
+    // get allUsers from database and display the info
+    $.ajax({
+      type: 'GET',
+      url: 'http://localhost:3000/users',
+      success: function(data){
+        users = data
+        console.log(users)
+        display_userlist(users)  // display info of all users on the screen
+      }
+
+    })
+
 
   }
 
@@ -380,9 +391,6 @@ $('#addCash_submit').click(function(){
       }
     })
 
-
-
-
   }
 })
 
@@ -403,7 +411,7 @@ $('#newUser_submit').click(function() {
     if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
     else if(verifyUsername_regex(new_username) && verifyCash_regex(new_cash)) {
       var req = '{"user": "' + new_username + '", "password": "' + new_password1 + '", "cash": ' + new_cash + '}'
-      console.log(req)
+      //console.log(req)
       $.ajax({
         type: 'POST',
         url: 'http://localhost:3000/newuser',
@@ -419,8 +427,6 @@ $('#newUser_submit').click(function() {
               'Holdings': [],
               'StockQuantity': []
             }
-            //users.push(new_user)
-           //display_userlist(users)
            window.alert('Success! User has been created. The username is: ' + new_username)
            // close newUser form
            newUserWindow_isOpen = false
@@ -754,16 +760,6 @@ function verifyUsername_regex(username) {
   return true
 }
 
-/*
-function username_exists(username, users) {
-  for(var cur= 0 ; cur < users.length ; cur++) {
-    if (users[cur].Username === username) {
-      return true
-    }
-  }
-  return false
-}
-*/
 
 function verifyCash_regex(cash){
   var cash_isValid = /^[0-9]+(\.[0-9][0-9])?$/.test(cash);

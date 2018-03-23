@@ -89,6 +89,22 @@ MongoClient.connect(url, function(err,res){
     })
   })
 
+  //api getAllUsers --- (TODO: HAS ERRORS)
+  app.get('/users', function(req,res) {
+    // get all documents in the collection and return in an array
+    var allUsers = []
+
+    db.collection('coolname-stocks').find().forEach(function(doc_i) {
+      // do not include password when fetching user info
+      var obj = {"user": doc_i.user, "cash": doc_i.cash, "stocks": doc_i.stocks}
+      console.log(obj)
+      allUsers.push(obj)
+    }).then(function() {
+      res.send(allUsers)
+    })
+
+  })
+
 
   //buy stock for a user
   //format of post: {"user": "", "stock": "", quantity: "", price:""}
