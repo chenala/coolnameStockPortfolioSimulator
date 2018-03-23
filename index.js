@@ -146,9 +146,9 @@ $('#Login').click(function(){
       type: 'GET',
       url: 'http://localhost:3000/users',
       success: function(data){
-        users = data
-        console.log(users)
-        display_userlist(users)  // display info of all users on the screen
+        console.log(data.length)
+        console.log(data)
+        display_userlist(data.length, data)  // display info of all users on the screen
       }
 
     })
@@ -778,25 +778,40 @@ function verifyDigitsOnly_regex(value){
   return true
 }
 
-function display_userlist(userlist) {
+function display_userlist(userlist_len, userlist) {
   $('#userlist_container').empty()
-  for(var i = 0 ; i < userlist.length ; i++) {
+  for(var i = 0 ; i < userlist_len ; i++) {
     var cur_entry = $('<div>', {class: 'userlist_entry'}).appendTo('#userlist_container')
     $('<h2>', {
-      text: 'User: ' + userlist[i].Username,
+      text: 'User: ' + userlist[i].user,
       class: 'userlist_entry_username'
     }).appendTo(cur_entry)
     $('<p>', {
-      text: 'Cash: $' + userlist[i].Cash,
+      text: 'Cash: $' + userlist[i].cash,
       class: 'userlist_entry_cash'
     }).appendTo(cur_entry)
 
     $('<p>', {
       text: 'Stock Value: $' + 0,
-      id: 'stock_value' + userlist[i].Username,
+      id: 'stock_value' + userlist[i].user,
       class: 'userlist_entry_stockValue'
     }).appendTo(cur_entry)
 
+    // genearate a string for user's stocks
+    var stocks_string = ''
+    for(var j = 0 ; j < userlist[i].stocks.length ; j++) {
+      var symbol_j = userlist[i].stocks[j].symbol
+      var quantity_j = userlist[i].stocks[j].quantity
+      var avgPrice_j = userlist[i].stocks[j].avgPrice
+      stocks_string = '{symbol: ' + symbol_j + ', quantity: ' + quantity_j + ', avgPrice: ' + avgPrice_j + '}'
+    }
+    $('<p>', {
+      text: 'Stocks: ' + stocks_string,
+      id: 'stock_value' + userlist[i].user,
+      class: 'userlist_entry_stocks'
+    }).appendTo(cur_entry)
+
+    /*
     $('<p>', {
       text: 'Holdings: ' + userlist[i].Holdings,
       class: 'userlist_entry_holdings'
@@ -806,10 +821,13 @@ function display_userlist(userlist) {
       text: 'Holding Quantities: ' + userlist[i].StockQuantity,
       class: 'userlist_entry_quantity'
     }).appendTo(cur_entry)
+
+    */
   }
 
+/*
   // calculate stock value for each user
-  for (var i = 0; i < userlist.length; i++) {
+  for (var i = 0; i < userlist_len; i++) {
     var prices = {}
 
     for (var m = 0; m < (userlist[i].Holdings).length; m++) {
@@ -839,6 +857,7 @@ function display_userlist(userlist) {
       })
     }
   }
+  */
 }
 
 
