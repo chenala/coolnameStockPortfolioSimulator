@@ -296,7 +296,7 @@ $('#newUser_button').click(function(){
   }
 })
 
-// add cash to existing user
+// deleteUser button
 $('#deleteUser_button').click(function(){
   if(addCashWindow_isOpen) {
     window.alert('Please finish or cancel your current request first.')
@@ -312,22 +312,31 @@ $('#deleteUser_submit').click(function(){
   var del_username = document.getElementById('deleteUsername_input').value
   if(verifyFieldsNotEmpty(1, [del_username])) {
     if(verifyUsername_regex(del_username)) {
-      if(!username_exists(del_username, users)) {
-          window.alert('Unable to proceed. This username does not exist.')
-      }
-      else {
-        // TODO: delete user from database
+      // delete user from database
+      var req = '{"user": "' + del_username + '"}'
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/deleteuser',
+        data: req,
+        contentType: 'application/json',
+        success: function(data){
+    //      console.log(data)
+          if(data == "Username does not exist") {
+            window.alert("Unable to proceed. Username does not exist.")
+          }
+          else {
+            window.alert("Success! The following user has been deleted: " + del_username)
+          }
+        }
+      })
 
-        display_userlist(users)
-        window.alert('Success! The following user has been deleted: ' + del_username)
-        // close form
-        deleteUserWindow_isOpen = false
-        display_userlist(users)
-        $('#deleteUser_div').hide()
-      }
+      // close form
+      deleteUserWindow_isOpen = false
+      $('#deleteUser_div').hide()
     }
   }
 })
+
 
 $('#deleteUser_cancel').click(function() {
   // close form and reset all fields
@@ -353,10 +362,11 @@ $('#addCash_submit').click(function(){
   var amount = document.getElementById('addCashValue_input').value
 
   if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername_regex(recipient) && verifyCash_regex(amount)) {
-    if(!username_exists(recipient, users)) {
+/*    if(!username_exists(recipient, users)) {
         window.alert('Unable to proceed. This username does not exist.')
     }
-    else {
+    */
+//    else {
       // add amount to the recipient
       for (var h = 0; h < users.length; h++) {
         if (recipient === users[h].Username) {
@@ -367,7 +377,7 @@ $('#addCash_submit').click(function(){
       addCashWindow_isOpen = false
       display_userlist(users)
       $('#addCash_div').hide()
-    }
+//    }
   }
 })
 
@@ -414,27 +424,7 @@ $('#newUser_submit').click(function() {
          }
         }
       })
-      // if(username_exists(new_username, users)) {
-      //     window.alert('Unable to proceed. This username already exists.')
-      // }
-      // // ^^ TODO: check if username already exists
-      // else {
-      //   // create new user
-      //   var new_user = {
-      //     'Username': new_username,
-      //     'Cash': parseInt(new_cash),
-      //     'Holdings': [],
-      //     'StockQuantity': []
-      //   }
-      //   users.push(new_user)
-      //
-      //   display_userlist(users)
-      //   window.alert('Success! User has been created. The username is: ' + new_username)
-      //   // close newUser form
-      //   newUserWindow_isOpen = false
-      //   $('#register_div').hide()
-      //   $('#login_container').show()
-      // }
+
     }
   }
 })
@@ -759,6 +749,7 @@ function verifyUsername_regex(username) {
   return true
 }
 
+/*
 function username_exists(username, users) {
   for(var cur= 0 ; cur < users.length ; cur++) {
     if (users[cur].Username === username) {
@@ -767,6 +758,7 @@ function username_exists(username, users) {
   }
   return false
 }
+*/
 
 function verifyCash_regex(cash){
   var cash_isValid = /^[0-9]+(\.[0-9][0-9])?$/.test(cash);

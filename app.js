@@ -62,6 +62,20 @@ MongoClient.connect(url, function(err,res){
     })
   })
 
+  // api for delete user
+  app.post('/deleteuser', function(req, res) {
+    var input = req.body
+    db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
+      if(document){
+        db.collection('coolname-stocks').deleteOne({user: input.user})
+        res.send("success. user deleted")
+      } else {
+        res.send("Username does not exist")
+      }
+    })
+  })
+
+
   //buy stock for a user
   //format of post: {"user": "", "stock": "", quantity: "", price:""}
   //return value is quantity of the stock after buying, avgPrice after buying,
