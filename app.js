@@ -56,7 +56,7 @@ MongoClient.connect(url, function(err,res){
       } else{
         var newUser = {"user": input.user, "password": input.password, "cash": input.cash, "stocks": []}
         db.collection("coolname-stocks").insertOne(newUser, function(err, res){
-          console.log(res)
+          res.send("success")
         })
       }
     })
