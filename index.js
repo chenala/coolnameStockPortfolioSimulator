@@ -387,27 +387,54 @@ $('#newUser_submit').click(function() {
   if(verifyFieldsNotEmpty(4, [new_username, new_cash, new_password1, new_password2])) {
     if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
     else if(verifyUsername_regex(new_username) && verifyCash_regex(new_cash)) {
-      if(username_exists(new_username, users)) {
-          window.alert('Unable to proceed. This username already exists.')
-      }
-      // ^^ TODO: check if username already exists
-      else {
-        // create new user
-        var new_user = {
-          'Username': new_username,
-          'Cash': parseInt(new_cash),
-          'Holdings': [],
-          'StockQuantity': []
+      var req = '{"user": "' + new_username + '", "password": "' + new_password1 + '", "cash": ' + new_cash + '}'
+      console.log(req)
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/newuser',
+        data: req,
+        contentType: 'application/json',
+        success: function(data){
+          if (data == "Username already exists"){
+           window.alert('Unable to proceed. This username already exists.')
+          } else{
+            var new_user = {
+              'Username': new_username,
+              'Cash': parseInt(new_cash),
+              'Holdings': [],
+              'StockQuantity': []
+            }
+            users.push(new_user)
+           //display_userlist(users)
+           window.alert('Success! User has been created. The username is: ' + new_username)
+           // close newUser form
+           newUserWindow_isOpen = false
+           $('#register_div').hide()
+           $('#login_container').show()
+         }
         }
-        users.push(new_user)
-
-        display_userlist(users)
-        window.alert('Success! User has been created. The username is: ' + new_username)
-        // close newUser form
-        newUserWindow_isOpen = false
-        $('#register_div').hide()
-        $('#login_container').show()
-      }
+      })
+      // if(username_exists(new_username, users)) {
+      //     window.alert('Unable to proceed. This username already exists.')
+      // }
+      // // ^^ TODO: check if username already exists
+      // else {
+      //   // create new user
+      //   var new_user = {
+      //     'Username': new_username,
+      //     'Cash': parseInt(new_cash),
+      //     'Holdings': [],
+      //     'StockQuantity': []
+      //   }
+      //   users.push(new_user)
+      //
+      //   display_userlist(users)
+      //   window.alert('Success! User has been created. The username is: ' + new_username)
+      //   // close newUser form
+      //   newUserWindow_isOpen = false
+      //   $('#register_div').hide()
+      //   $('#login_container').show()
+      // }
     }
   }
 })

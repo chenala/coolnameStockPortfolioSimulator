@@ -46,6 +46,22 @@ MongoClient.connect(url, function(err,res){
     })
   })
 
+  //api for creating user
+  //input format: {"user": , "password": , "cash": }
+  app.post('/newuser', function(req, res){
+    var input = req.body
+    db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
+      if (document){
+        res.send("Username already exists")
+      } else{
+        var newUser = {"user": input.user, "password": input.password, "cash": input.cash, "stocks": []}
+        db.collection("coolname-stocks").insertOne(newUser, function(err, res){
+          console.log(res)
+        })
+      }
+    })
+  })
+
   //buy stock for a user
   //format of post: {"user": "", "stock": "", quantity: "", price:""}
   //return value is quantity of the stock after buying, avgPrice after buying,
