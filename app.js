@@ -55,7 +55,7 @@ MongoClient.connect(url, function(err,res){
         res.send("Username already exists")
       } else{
         var newUser = {"user": input.user, "password": input.password, "cash": input.cash, "stocks": []}
-        db.collection("coolname-stocks").insertOne(newUser, function(err, res){
+        db.collection("coolname-stocks").insertOne(newUser, function(err, response){
           res.send("success")
         })
       }

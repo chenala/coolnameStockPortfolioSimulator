@@ -404,7 +404,7 @@ $('#newUser_submit').click(function() {
               'Holdings': [],
               'StockQuantity': []
             }
-            users.push(new_user)
+            //users.push(new_user)
            //display_userlist(users)
            window.alert('Success! User has been created. The username is: ' + new_username)
            // close newUser form
