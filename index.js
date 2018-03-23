@@ -323,8 +323,7 @@ $('#deleteUser_submit').click(function(){
     //      console.log(data)
           if(data == "Username does not exist") {
             window.alert("Unable to proceed. Username does not exist.")
-          }
-          else {
+          } else {
             window.alert("Success! The following user has been deleted: " + del_username)
           }
         }
@@ -362,22 +361,28 @@ $('#addCash_submit').click(function(){
   var amount = document.getElementById('addCashValue_input').value
 
   if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername_regex(recipient) && verifyCash_regex(amount)) {
-/*    if(!username_exists(recipient, users)) {
-        window.alert('Unable to proceed. This username does not exist.')
-    }
-    */
-//    else {
-      // add amount to the recipient
-      for (var h = 0; h < users.length; h++) {
-        if (recipient === users[h].Username) {
-          users[h].Cash = parseFloat(users[h].Cash) + parseFloat(amount)
+    var req = '{' + '"user": "' + recipient + '", "cash": "' + amount + '"}'
+
+    $.ajax({
+      type: 'POST',
+      url: 'http://localhost:3000/addCash',
+      data: req,
+      contentType: 'application/json',
+      success: function(data){
+        if(data == "Username does not exist") {
+          window.alert("Unable to proceed. Username does not exist.")
+        } else {
+          window.alert("Success! " + recipient + " has received $" + amount +".")
+          // close form
+          addCashWindow_isOpen = false
+          $('#addCash_div').hide()
         }
       }
-      window.alert('Succcess! Amount has been added to the recipient.')
-      addCashWindow_isOpen = false
-      display_userlist(users)
-      $('#addCash_div').hide()
-//    }
+    })
+
+
+
+
   }
 })
 
