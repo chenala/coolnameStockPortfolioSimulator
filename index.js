@@ -142,16 +142,7 @@ $('#Login').click(function(){
     $('#welcome_admin').text('Welcome, ' + username)
 
     // get allUsers from database and display the info
-    $.ajax({
-      type: 'GET',
-      url: 'http://localhost:3000/users',
-      success: function(data){
-        console.log(data.length)
-        console.log(data)
-        display_userlist(data.length, data)  // display info of all users on the screen
-      }
-
-    })
+    displayAllUsers()
 
 
   }
@@ -337,8 +328,11 @@ $('#deleteUser_submit').click(function(){
           } else {
             window.alert("Success! The following user has been deleted: " + del_username)
           }
+          // update the list of users on admin screen
+          displayAllUsers()
         }
       })
+
 
       // close form
       deleteUserWindow_isOpen = false
@@ -384,6 +378,8 @@ $('#addCash_submit').click(function(){
           window.alert("Unable to proceed. Username does not exist.")
         } else {
           window.alert("Success! " + recipient + " has received $" + amount +".")
+          // update the list of users on admin screen
+          displayAllUsers()
           // close form
           addCashWindow_isOpen = false
           $('#addCash_div').hide()
@@ -889,6 +885,18 @@ function display_userlist(userlist_len, userlist) {
 
 }
 
+// get all users from database and display them on screen
+function displayAllUsers(){
+  $.ajax({
+    type: 'GET',
+    url: 'http://localhost:3000/users',
+    success: function(data){
+      console.log(data.length)
+      console.log(data)
+      display_userlist(data.length, data)  // display info of all users on the screen
+    }
+  })
+}
 
 function displayUserStanding(cash, marketValue, totalProfitLoss) {
   $('#current_standing_div').empty()

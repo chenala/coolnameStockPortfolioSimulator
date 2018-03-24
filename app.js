@@ -48,14 +48,14 @@ MongoClient.connect(url, function(err,res){
 
   //api for creating user
   //input format: {"user": , "password": , "cash": }
-  // "cash" maps to an integer
+  // "cash" maps to float
   app.post('/newuser', function(req, res){
     var input = req.body
     db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
       if (document){
         res.send("Username already exists")
       } else{
-        var newUser = {"user": input.user, "password": input.password, "cash": parseInt(input.cash), "stocks": []}
+        var newUser = {"user": input.user, "password": input.password, "cash": parseFloat(input.cash), "stocks": []}
         db.collection("coolname-stocks").insertOne(newUser, function(err, response){
           res.send("success")
         })
@@ -81,7 +81,7 @@ MongoClient.connect(url, function(err,res){
     var input = req.body
     db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
       if(document) {
-        db.collection('coolname-stocks').updateOne({user: input.user}, {$inc: {cash: parseInt(input.cash)}})
+        db.collection('coolname-stocks').updateOne({user: input.user}, {$inc: {cash: parseFloat(input.cash)}})
         res.send('success. cash updated')
       } else {
         res.send("Username does not exist")
