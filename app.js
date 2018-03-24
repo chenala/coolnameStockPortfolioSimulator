@@ -89,7 +89,7 @@ MongoClient.connect(url, function(err,res){
     })
   })
 
-  //api getAllUsers --- (TODO: HAS ERRORS)
+  //api getAllUsers
   app.get('/users', function(req,res) {
     // get all documents in the collection and return in an array
     db.collection('coolname-stocks').find().toArray().then(function(arr){

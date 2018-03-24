@@ -780,6 +780,11 @@ function verifyDigitsOnly_regex(value){
 
 function display_userlist(userlist_len, userlist) {
   $('#userlist_container').empty()
+
+  // quantity list for determining stockValue
+  // format: [{symbol: <company symbol>, quantity: <number of stocks user holds in this company>}]
+  var quantityList = []
+
   for(var i = 0 ; i < userlist_len ; i++) {
     var cur_entry = $('<div>', {class: 'userlist_entry'}).appendTo('#userlist_container')
     $('<h2>', {
@@ -797,13 +802,15 @@ function display_userlist(userlist_len, userlist) {
       class: 'userlist_entry_stockValue'
     }).appendTo(cur_entry)
 
-    // genearate a string for user's stocks
+
     var stocks_string = ''
+    // display user's stocks
     for(var j = 0 ; j < userlist[i].stocks.length ; j++) {
       var symbol_j = userlist[i].stocks[j].symbol
       var quantity_j = userlist[i].stocks[j].quantity
       var avgPrice_j = userlist[i].stocks[j].avgPrice
       stocks_string = '{symbol: ' + symbol_j + ', quantity: ' + quantity_j + ', avgPrice: ' + avgPrice_j + '}'
+      quantityList.push({'symbol': symbol_j, 'quantity': quantity_j})
     }
     $('<p>', {
       text: 'Stocks: ' + stocks_string,
@@ -823,18 +830,39 @@ function display_userlist(userlist_len, userlist) {
     }).appendTo(cur_entry)
 
     */
-  }
 
+
+    // find stockWorth -- TODO: NOT WORKING!!!
+    var stockWorth = 0
+    var curUser = userlist[i].user
+//    console.log(quantityList.length)
+    for(var m = 0 ; m < quantityList.length ; m++) {
+      var url = api.concat('/stock/' + quantityList[m].symbol + '/delayed-quote')
+      $.ajax({
+        type: 'GET',
+        url: url,
+        success:function(data) {
+          var stockPrice = data.delayedPrice
+          stockWorth += (parseFloat(quantityList[m]) * parseFloat(stockPrice)).toFixed(2)
+          $('#stock_value' + curUser).text("Stock Value: $" + stockWorth)
+        }
+      })
+    }
+
+
+
+
+  }
 /*
   // calculate stock value for each user
   for (var i = 0; i < userlist_len; i++) {
     var prices = {}
 
-    for (var m = 0; m < (userlist[i].Holdings).length; m++) {
-      var url = api.concat('/stock/' + userlist[i].Holdings[m] + '/delayed-quote')
-      var quantity = userlist[i].StockQuantity[m]
-      var id = userlist[i].Username
-      var money = userlist[i].Cash
+    for (var m = 0; m < quantityList.length; m++) {
+      var url = api.concat('/stock/' + quantityList[m].symbol + '/delayed-quote')
+      var quantity = quantityList[m].quantity
+      var id = userlist[i].user
+      var money = userlist[i].cash
       $.ajax({
         type: 'GET',
         url: url,
@@ -842,7 +870,7 @@ function display_userlist(userlist_len, userlist) {
           var ticker = data.symbol
           var stockPrice = data.delayedPrice
           prices[ticker] = stockPrice
-          for (var c = 0; c < userlist.length; c++) {
+          for (var c = 0; c < userlist_len; c++) {
             var stockWorth = 0
             var stockValue = 0
             for (var n = 0; n < (userlist[c].Holdings).length; n++) {
@@ -857,7 +885,8 @@ function display_userlist(userlist_len, userlist) {
       })
     }
   }
-  */
+*/
+
 }
 
 
