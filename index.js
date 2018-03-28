@@ -152,7 +152,7 @@ $('#Login').click(function(){
     var req = '{"user": "' + username + '", "password": "' + password + '"}'
     $.ajax({
       type: 'POST',
-      url: 'http://localhost:3000/login',
+      url: '/login',
       data: req,
       contentType: 'application/json',
       success: function(data){
@@ -318,7 +318,7 @@ $('#deleteUser_submit').click(function(){
       var req = '{"user": "' + del_username + '"}'
       $.ajax({
         type: 'POST',
-        url: 'http://localhost:3000/deleteuser',
+        url: '/deleteuser',
         data: req,
         contentType: 'application/json',
         success: function(data){
@@ -370,7 +370,7 @@ $('#addCash_submit').click(function(){
 
     $.ajax({
       type: 'POST',
-      url: 'http://localhost:3000/addCash',
+      url: '/addCash',
       data: req,
       contentType: 'application/json',
       success: function(data){
@@ -410,7 +410,7 @@ $('#newUser_submit').click(function() {
       //console.log(req)
       $.ajax({
         type: 'POST',
-        url: 'http://localhost:3000/newuser',
+        url: '/newuser',
         data: req,
         contentType: 'application/json',
         success: function(data){
@@ -535,7 +535,7 @@ $('#buyButton').click(function(){
           var req = '{"user": "'+ sessionStorage.username + '", "stock": "' + searchSymbol + '", "quantity": ' + quantity + ', "price": ' + price + '}'
           $.ajax({
             type: 'POST',
-            url: 'http://localhost:3000/buy',
+            url: '/buy',
             data: req,
             contentType: 'application/json',
             success: function(data){
@@ -630,7 +630,7 @@ $('#sellButton').click(function(){
           var req = '{"user": "'+ username + '", "stock": "' + searchSymbol + '", "quantity": ' + quantity + ', "price": ' + price + '}'
           $.ajax({
             type: 'POST',
-            url: 'http://localhost:3000/sell',
+            url: '/sell',
             data: req,
             contentType: 'application/json',
             success: function(data){
@@ -889,7 +889,7 @@ function display_userlist(userlist_len, userlist) {
 function displayAllUsers(){
   $.ajax({
     type: 'GET',
-    url: 'http://localhost:3000/users',
+    url: '/users',
     success: function(data){
       console.log(data.length)
       console.log(data)
