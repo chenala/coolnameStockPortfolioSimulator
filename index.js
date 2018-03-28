@@ -317,7 +317,7 @@ $('#deleteUser_submit').click(function(){
       // delete user from database
       var req = '{"user": "' + del_username + '"}'
       $.ajax({
-        type: 'POST',
+        type: 'DELETE',
         url: '/deleteuser',
         data: req,
         contentType: 'application/json',
@@ -369,7 +369,7 @@ $('#addCash_submit').click(function(){
     var req = '{' + '"user": "' + recipient + '", "cash": "' + amount + '"}'
 
     $.ajax({
-      type: 'POST',
+      type: 'PUT',
       url: '/addCash',
       data: req,
       contentType: 'application/json',
