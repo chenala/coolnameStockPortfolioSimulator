@@ -788,10 +788,12 @@ function display_userlist(userlist_len, userlist) {
 
   // quantity list for determining stockValue
   // format: [{symbol: <company symbol>, quantity: <number of stocks user holds in this company>}]
-  var quantityList = []
+  var companyList = []
+  var curUser;
 
   for(var i = 0 ; i < userlist_len ; i++) {
     var cur_entry = $('<div>', {class: 'userlist_entry'}).appendTo('#userlist_container')
+    curUser = userlist[i].user
     $('<h2>', {
       text: 'User: ' + userlist[i].user,
       class: 'userlist_entry_username'
@@ -809,88 +811,49 @@ function display_userlist(userlist_len, userlist) {
 
 
     var stocks_string = ''
+    var stockWorth = 0
+    console.log(userlist[i].user)
     // display user's stocks
     for(var j = 0 ; j < userlist[i].stocks.length ; j++) {
       var symbol_j = userlist[i].stocks[j].symbol
       var quantity_j = userlist[i].stocks[j].quantity
       var avgPrice_j = userlist[i].stocks[j].avgPrice
-      stocks_string = '{symbol: ' + symbol_j + ', quantity: ' + quantity_j + ', avgPrice: ' + avgPrice_j + '}'
-      quantityList.push({'symbol': symbol_j, 'quantity': quantity_j})
+      console.log(symbol_j)
+
+      stocks_string += '{symbol: ' + symbol_j + ', quantity: ' + quantity_j + ', avgPrice: ' + avgPrice_j + '}'
+      
+      // calculate stockPrice
+      var url = api.concat('/stock/' + symbol_j + '/delayed-quote')
+      $.ajax({
+        type: 'GET',
+        url: url,
+        success:function(data) {
+          var stockPrice = data.delayedPrice
+          console.log(parseFloat(quantity_j) * parseFloat(stockPrice))
+          var sum = parseFloat(stockWorth) + parseFloat(quantity_j) * parseFloat(stockPrice)
+          stockWorth = sum.toFixed(2)
+          console.log(stockWorth)
+          $('#stock_value' + curUser).text("Stock Value: $" + stockWorth)
+        }
+      })
+      
     }
+    
+
+
+
+
     $('<p>', {
       text: 'Stocks: ' + stocks_string,
       id: 'stock_value' + userlist[i].user,
       class: 'userlist_entry_stocks'
     }).appendTo(cur_entry)
 
-    /*
-    $('<p>', {
-      text: 'Holdings: ' + userlist[i].Holdings,
-      class: 'userlist_entry_holdings'
-    }).appendTo(cur_entry)
-
-    $('<p>', {
-      text: 'Holding Quantities: ' + userlist[i].StockQuantity,
-      class: 'userlist_entry_quantity'
-    }).appendTo(cur_entry)
-
-    */
-
-
-    // find stockWorth -- TODO: NOT WORKING!!!
-    var stockWorth = 0
-    var curUser = userlist[i].user
-//    console.log(quantityList.length)
-    for(var m = 0 ; m < quantityList.length ; m++) {
-      var url = api.concat('/stock/' + quantityList[m].symbol + '/delayed-quote')
-      $.ajax({
-        type: 'GET',
-        url: url,
-        success:function(data) {
-          var stockPrice = data.delayedPrice
-          stockWorth += (parseFloat(quantityList[m]) * parseFloat(stockPrice)).toFixed(2)
-          $('#stock_value' + curUser).text("Stock Value: $" + stockWorth)
-        }
-      })
-    }
-
 
 
 
   }
-/*
-  // calculate stock value for each user
-  for (var i = 0; i < userlist_len; i++) {
-    var prices = {}
 
-    for (var m = 0; m < quantityList.length; m++) {
-      var url = api.concat('/stock/' + quantityList[m].symbol + '/delayed-quote')
-      var quantity = quantityList[m].quantity
-      var id = userlist[i].user
-      var money = userlist[i].cash
-      $.ajax({
-        type: 'GET',
-        url: url,
-        success:function(data) {
-          var ticker = data.symbol
-          var stockPrice = data.delayedPrice
-          prices[ticker] = stockPrice
-          for (var c = 0; c < userlist_len; c++) {
-            var stockWorth = 0
-            var stockValue = 0
-            for (var n = 0; n < (userlist[c].Holdings).length; n++) {
-              if (Object.keys(prices).includes(userlist[c].Holdings[n])) {
-                stockValue = parseFloat(parseFloat(parseFloat(userlist[c].StockQuantity[n]) * parseFloat(prices[userlist[c].Holdings[n]]))).toFixed(2)
-                stockWorth = parseFloat(stockWorth) + parseFloat(stockValue)
-                $('#stock_value' + userlist[c].Username).text("Stock Value: $" + stockWorth.toFixed(2))
-              }
-            }
-          }
-        }
-      })
-    }
-  }
-*/
 
 }
 
@@ -900,8 +863,6 @@ function displayAllUsers(){
     type: 'GET',
     url: '/users',
     success: function(data){
-      console.log(data.length)
-      console.log(data)
       display_userlist(data.length, data)  // display info of all users on the screen
     }
   })
