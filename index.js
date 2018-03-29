@@ -109,6 +109,13 @@ if (sessionStorage.login == "user"){
   $('#stockHistoryDiv1w').hide()
 
   $('#stockHistory').hide()
+} else if (sessionStorage.login == "admin") {
+  $('#admin_container').show()
+  $('#login_container').hide()
+  $('#welcome_admin').text('Welcome, ' + username)
+
+  // get allUsers from database and display the info
+  displayAllUsers()
 }
 
 $('#Login').click(function(){
@@ -140,6 +147,8 @@ $('#Login').click(function(){
     users = [user1, user2, user3]
 */
     $('#welcome_admin').text('Welcome, ' + username)
+
+    sessionStorage.login = "admin"
 
     // get allUsers from database and display the info
     displayAllUsers()
