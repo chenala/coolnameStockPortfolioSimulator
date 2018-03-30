@@ -112,7 +112,7 @@ if (sessionStorage.login == "user"){
 } else if (sessionStorage.login == "admin") {
   $('#admin_container').show()
   $('#login_container').hide()
-  $('#welcome_admin').text('Welcome, ' + username)
+  $('#welcome_admin').text('Welcome, admin')
 
   // get allUsers from database and display the info
   displayAllUsers()
@@ -124,28 +124,6 @@ $('#Login').click(function(){
   if (username === 'admin'){
     $('#admin_container').show()
     $('#login_container').hide()
-/*
-    //The object 'users' holds data about all users on the system
-    var user1 = {
-      'Username': 'User1',
-      'Cash': 1000,
-      'Holdings': ['AAPL', 'FB'],
-      'StockQuantity': [1,2]
-    }
-    var user2 = {
-      'Username': 'User2',
-      'Cash': 100,
-      'Holdings': ['FB'],
-      'StockQuantity': [3]
-    }
-    var user3 = {
-      'Username': 'User3',
-      'Cash': 750,
-      'Holdings': ['MSFT'],
-      'StockQuantity': [2]
-    }
-    users = [user1, user2, user3]
-*/
     $('#welcome_admin').text('Welcome, ' + username)
 
     sessionStorage.login = "admin"
@@ -803,11 +781,6 @@ function display_userlist(userlist_len, userlist) {
       class: 'userlist_entry_cash'
     }).appendTo(cur_entry)
 
-    $('<p>', {
-      text: 'Stock Value: $' + 0,
-      id: 'stock_value' + userlist[i].user,
-      class: 'userlist_entry_stockValue'
-    }).appendTo(cur_entry)
 
 
     var stocks_string = ''
@@ -821,24 +794,10 @@ function display_userlist(userlist_len, userlist) {
       console.log(symbol_j)
 
       stocks_string += '{symbol: ' + symbol_j + ', quantity: ' + quantity_j + ', avgPrice: ' + avgPrice_j + '}'
-      
-      // calculate stockPrice
-      var url = api.concat('/stock/' + symbol_j + '/delayed-quote')
-      $.ajax({
-        type: 'GET',
-        url: url,
-        success:function(data) {
-          var stockPrice = data.delayedPrice
-          console.log(parseFloat(quantity_j) * parseFloat(stockPrice))
-          var sum = parseFloat(stockWorth) + parseFloat(quantity_j) * parseFloat(stockPrice)
-          stockWorth = sum.toFixed(2)
-          console.log(stockWorth)
-          $('#stock_value' + curUser).text("Stock Value: $" + stockWorth)
-        }
-      })
-      
+
+
     }
-    
+
 
 
 
