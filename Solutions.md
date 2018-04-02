@@ -70,3 +70,5 @@ Add Cash URL: /addCash?user=username&amount=number
 Buy URL: /buy?user=username&symbol=tickerl&quantity=number
 
 Sell URL: /sell?user=username&symbol=ticker&quantity=number
+
+Display Users URL: /users

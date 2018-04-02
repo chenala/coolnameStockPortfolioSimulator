@@ -705,11 +705,6 @@ $('#sellButton').click(function(){
   }
 })
 
-
-
-
-
-
 // HELPER FUNCTIONS
 //helper function to check if a variable is integer
 function isInt(value) {
@@ -792,26 +787,15 @@ function display_userlist(userlist_len, userlist) {
       class: 'userlist_entry_cash'
     }).appendTo(cur_entry)
 
-
-
     var stocks_string = ''
     var stockWorth = 0
-    console.log(userlist[i].user)
     // display user's stocks
     for(var j = 0 ; j < userlist[i].stocks.length ; j++) {
       var symbol_j = userlist[i].stocks[j].symbol
       var quantity_j = userlist[i].stocks[j].quantity
       var avgPrice_j = userlist[i].stocks[j].avgPrice
-      console.log(symbol_j)
-
       stocks_string += '{Symbol: ' + symbol_j + ', Quantity: ' + quantity_j + ', Average Purchase Price: $' + avgPrice_j + '}'
-
-
     }
-
-
-
-
 
     $('<p>', {
       text: 'Stocks: ' + stocks_string,
@@ -819,11 +803,7 @@ function display_userlist(userlist_len, userlist) {
       class: 'userlist_entry_stocks'
     }).appendTo(cur_entry)
 
-
-
-
   }
-
 
 }
 
