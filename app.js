@@ -31,6 +31,8 @@ MongoClient.connect(url, function(err,res){
   //based on userId, retrieve information of this user from database
   //format of input {"user": "", "password": ""}
   app.post('/login', function(req, res){
+    console.log(req.route.path)
+    console.log(req.query.user)
     var input = req.body
     db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
       if (document){
@@ -112,6 +114,11 @@ MongoClient.connect(url, function(err,res){
   //return value is quantity of the stock after buying, avgPrice after buying,
   //and cash after buying
   app.post('/buy', function(req, res){
+    console.log(req.route.path)
+    console.log(req.query.user)
+    console.log(req.query.symbol)
+    console.log(req.query.quantity)
+
     var input = req.body
     console.log(input)
     //check the user in database
@@ -170,6 +177,11 @@ MongoClient.connect(url, function(err,res){
   //return value is quantity of the stock after selling, avgPrice after selling,
   //and cash after selling
   app.post('/sell', function(req, res){
+    console.log(req.route.path)
+    console.log(req.query.user)
+    console.log(req.query.symbol)
+    console.log(req.query.quantity)
+
     var input = req.body
     console.log(input)
     //check the user in database

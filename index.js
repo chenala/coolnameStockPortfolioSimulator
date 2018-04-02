@@ -137,9 +137,11 @@ $('#Login').click(function(){
   else{
     //if it is a user role
     var req = '{"user": "' + username + '", "password": "' + password + '"}'
+    var userlogin_url = '/login?user=' + username
+
     $.ajax({
       type: 'POST',
-      url: '/login',
+      url: userlogin_url,
       data: req,
       contentType: 'application/json',
       success: function(data){
@@ -523,9 +525,12 @@ $('#buyButton').click(function(){
         success:function(data){
           var price = data.delayedPrice
           var req = '{"user": "'+ sessionStorage.username + '", "stock": "' + searchSymbol + '", "quantity": ' + quantity + ', "price": ' + price + '}'
+          
+          var buy_url = '/buy?user=' + sessionStorage.username + '&symbol=' + searchSymbol + '&quantity=' + quantity
+          
           $.ajax({
             type: 'POST',
-            url: '/buy',
+            url: buy_url,
             data: req,
             contentType: 'application/json',
             success: function(data){
@@ -618,9 +623,12 @@ $('#sellButton').click(function(){
           var price = data.delayedPrice
           username = sessionStorage.username
           var req = '{"user": "'+ username + '", "stock": "' + searchSymbol + '", "quantity": ' + quantity + ', "price": ' + price + '}'
+          
+          var sell_url = '/sell?user=' + sessionStorage.username + '&symbol=' + searchSymbol + '&quantity=' + quantity
+
           $.ajax({
             type: 'POST',
-            url: '/sell',
+            url: sell_url,
             data: req,
             contentType: 'application/json',
             success: function(data){
