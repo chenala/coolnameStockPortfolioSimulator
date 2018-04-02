@@ -67,6 +67,9 @@ MongoClient.connect(url, function(err,res){
 
   // api for delete user
   app.delete('/deleteuser', function(req, res) {
+    console.log(req.route.path)
+    console.log(req.query.user)
+    
     var input = req.body
     db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
       if(document){

@@ -303,9 +303,11 @@ $('#deleteUser_submit').click(function(){
     if(verifyUsername_regex(del_username)) {
       // delete user from database
       var req = '{"user": "' + del_username + '"}'
+      var deleteUser_url = '/deleteuser?user=' + del_username
+
       $.ajax({
         type: 'DELETE',
-        url: '/deleteuser',
+        url: deleteUser_url,
         data: req,
         contentType: 'application/json',
         success: function(data){
