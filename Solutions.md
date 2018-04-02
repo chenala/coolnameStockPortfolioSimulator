@@ -61,7 +61,7 @@ In order to follow RESTful API design guidelines, we designed URL queries to fol
 
 As an example, here are what our login, delete user, add cash to user, and buy/sell stock URLs look like:
 
-Login URL: /login?user=<username>
+Login URL: /login?user=username
   
 Delete User URL: /delete?user=username
   
