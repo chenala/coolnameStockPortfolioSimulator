@@ -53,3 +53,13 @@ After logging in as an admin, users will be redirected to a welcome page that di
 "Give Cash to Existing User" is a PUT request to backend and "Delete User" is a DELETE request to backend. The backend will handle these requests and update database accordingly.
 
 Features Summary: View list of all users. For each user, view username, cash, value of stock, stocks held, and quantity of shares held.  Give cash to an existing user. Delete an existing user.
+
+
+API Design:
+
+In order to follow RESTful API design guidelines, we designed URL queries to follow the following format: /endpoint?params
+
+As an example, here are what our login, delete user, and add cash to user URLs look like:
+Login URL: /login?user=<username>
+Delete User URL: /delete?user=<username>
+Add Cash URL: /addCash?user=<username>&amount=<number>
