@@ -50,6 +50,6 @@ Admin Page View:
 
 After logging in as an admin, users will be redirected to a welcome page that displays basic information regarding all users (exluding admin users) of the website. Information displayed for each user includes username, cash in portfolio, companies held in portfolio, quantity of shares in each company held, and the average price stock in each company was purchased at. In addition to the ability to view portfolio information, admin users can make use of "Give Cash to Existing User" buttons and "Delete User" button to modify user accounts. When these buttons are clicked, a new form is created for the admin to fill out the specifications of the request. For "Give Cash to Existing User", the required form asks for the username of the user to give the cash to, as well as how much to give. For "Delete User", the required form asks for the user name of the user to be deleted.
 
-"Give Cash to Existing User" is a PUT request to backend and "Delete User" is a GET request to backend. The backend will handle these requests and update database accordingly.
+"Give Cash to Existing User" is a PUT request to backend and "Delete User" is a DELETE request to backend. The backend will handle these requests and update database accordingly.
 
 Features Summary: View list of all users. For each user, view username, cash, value of stock, stocks held, and quantity of shares held.  Give cash to an existing user. Delete an existing user.
