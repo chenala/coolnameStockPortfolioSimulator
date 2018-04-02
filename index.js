@@ -394,10 +394,12 @@ $('#newUser_submit').click(function() {
     if(!(new_password1 === new_password2)) window.alert('Unable to proceed. Passwords do not match.')
     else if(verifyUsername_regex(new_username) && verifyCash_regex(new_cash)) {
       var req = '{"user": "' + new_username + '", "password": "' + new_password1 + '", "cash": ' + new_cash + '}'
+      
+      var newUser_url = '/newUser?user=' + new_username
       //console.log(req)
       $.ajax({
         type: 'POST',
-        url: '/newuser',
+        url: newUser_url,
         data: req,
         contentType: 'application/json',
         success: function(data){
