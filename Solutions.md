@@ -63,6 +63,6 @@ As an example, here are what our login, delete user, and add cash to user URLs l
 
 Login URL: /login?user=<username>
   
-Delete User URL: /delete?user=<username>
+Delete User URL: /delete?user=username
   
-Add Cash URL: /addCash?user=<username>&amount=<number>
+Add Cash URL: /addCash?user=username&amount=number
