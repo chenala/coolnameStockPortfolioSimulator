@@ -795,7 +795,7 @@ function display_userlist(userlist_len, userlist) {
       var avgPrice_j = userlist[i].stocks[j].avgPrice
       console.log(symbol_j)
 
-      stocks_string += '{symbol: ' + symbol_j + ', quantity: ' + quantity_j + ', avgPrice: ' + avgPrice_j + '}'
+      stocks_string += '{Symbol: ' + symbol_j + ', Quantity: ' + quantity_j + ', Average Purchase Price: $' + avgPrice_j + '}'
 
 
     }
