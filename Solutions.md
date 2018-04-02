@@ -59,7 +59,7 @@ API Design:
 
 In order to follow RESTful API design guidelines, we designed URL queries to follow the following format: /endpoint?params
 
-As an example, here are what our login, delete user, add cash to user, and buy/sell URLs look like:
+As an example, here are what our login, delete user, add cash to user, and buy/sell stock URLs look like:
 
 Login URL: /login?user=<username>
   
