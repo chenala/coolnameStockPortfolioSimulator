@@ -69,7 +69,7 @@ MongoClient.connect(url, function(err,res){
   app.delete('/deleteuser', function(req, res) {
     console.log(req.route.path)
     console.log(req.query.user)
-    
+
     var input = req.body
     db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
       if(document){
@@ -83,6 +83,9 @@ MongoClient.connect(url, function(err,res){
 
   // api addCash to user
   app.put('/addCash', function(req, res) {
+    console.log(req.route.path)
+    console.log(req.query.user)
+    console.log(req.query.amount)
     var input = req.body
     db.collection('coolname-stocks').findOne({user: input.user}).then(function(document){
       if(document) {

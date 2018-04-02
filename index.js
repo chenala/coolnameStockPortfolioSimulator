@@ -273,8 +273,6 @@ $('.logout_class').click(function(){
 })
 
 
-
-
 // add new user operation
 $('#newUser_button').click(function(){
   if(!newUserWindow_isOpen) {
@@ -356,10 +354,11 @@ $('#addCash_submit').click(function(){
 
   if(verifyFieldsNotEmpty(2, [recipient, amount]) && verifyUsername_regex(recipient) && verifyCash_regex(amount)) {
     var req = '{' + '"user": "' + recipient + '", "cash": "' + amount + '"}'
+    var addCash_url = '/addCash?user=' + recipient + '&amount='+amount
 
     $.ajax({
       type: 'PUT',
-      url: '/addCash',
+      url: addCash_url,
       data: req,
       contentType: 'application/json',
       success: function(data){
