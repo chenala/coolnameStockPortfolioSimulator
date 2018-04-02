@@ -9,10 +9,12 @@ How to run the application:
 As described in Assignment 1, our website is a virtual stock portfolio manager. Users can use it to gain experience managing a portfolio of stocks without risking real money.
 
 The 4 views of our application are:
+
 -Register Page
 -Login Page
 -User Page
 -Admin Page
+
 Below is a breakdown of the functionality and features of each view.
 
 
